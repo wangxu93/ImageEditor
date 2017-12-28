@@ -83,10 +83,10 @@ public class RotateFragment extends BaseFragment implements ImageEditInte {
 
     @Override
     public void onShow() {
-        activity.mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+//        activity.mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
         activity.mainImage.setVisibility(View.GONE);
 
-        mRotatePanel.addBit(activity.mainBitmap, activity.mainImage.getBitmapRect());
+        mRotatePanel.addBit(activity.mainBitmap, activity.mainImage.getImageBound(null));
         if (mSeekBar != null) {
             mSeekBar.setProgress(0);
         }

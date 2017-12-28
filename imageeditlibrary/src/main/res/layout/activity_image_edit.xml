@@ -12,7 +12,7 @@
         android:layout_height="fill_parent"
         android:background="@color/black">
 
-        <com.yjing.imageeditlibrary.editimage.view.imagezoom.ImageViewTouch
+        <com.yjing.imageeditlibrary.editimage.view.PinchImageView
             android:id="@+id/main_image"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

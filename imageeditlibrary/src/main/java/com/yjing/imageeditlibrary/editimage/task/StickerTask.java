@@ -42,7 +42,7 @@ public abstract class StickerTask extends AsyncTask<Bitmap, Void, Bitmap> {
     @Override
     protected Bitmap doInBackground(Bitmap... params) {
         // System.out.println("保存贴图!");
-        Matrix touchMatrix = mContext.mainImage.getImageViewMatrix();
+        Matrix touchMatrix = mContext.mainImage.getCurrentImageMatrix(null);
 
         Bitmap resultBit = Bitmap.createBitmap(params[0]).copy(
                 Bitmap.Config.RGB_565, true);

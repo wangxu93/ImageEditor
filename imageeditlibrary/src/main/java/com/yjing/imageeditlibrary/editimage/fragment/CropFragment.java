@@ -137,10 +137,10 @@ public class CropFragment extends BaseFragment implements ImageEditInte {
 
                 mCropPanel.setVisibility(View.VISIBLE);
                 mCropPanel.setIsOperation(true);
-                activity.mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
-                activity.mainImage.setScaleEnabled(false);// 禁用缩放
+//                activity.mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+//                activity.mainImage.setScaleEnabled(false);// 禁用缩放
                 //
-                RectF r = activity.mainImage.getBitmapRect();
+                RectF r = activity.mainImage.getImageBound(null);
                 activity.mCropPanel.setCropRect(r);
             }
         });
@@ -169,7 +169,7 @@ public class CropFragment extends BaseFragment implements ImageEditInte {
             selctedTextView = curTextView;
             selctedTextView.setTextColor(SELECTED_COLOR);
 
-            mCropPanel.setRatioCropRect(activity.mainImage.getBitmapRect(),
+            mCropPanel.setRatioCropRect(activity.mainImage.getImageBound(null),
                     dataItem.getRatio());
         }
     }
@@ -214,11 +214,11 @@ public class CropFragment extends BaseFragment implements ImageEditInte {
 
         mCropPanel.setVisibility(View.GONE);
         mCropPanel.setIsOperation(false);
-        activity.mainImage.setScaleEnabled(true);// 恢复缩放功能
+//        activity.mainImage.setScaleEnabled(true);// 恢复缩放功能
         if (selctedTextView != null) {
             selctedTextView.setTextColor(UNSELECTED_COLOR);
         }
-        mCropPanel.setRatioCropRect(activity.mainImage.getBitmapRect(), -1);
+        mCropPanel.setRatioCropRect(activity.mainImage.getImageBound(null), -1);
     }
 
 
@@ -252,7 +252,7 @@ public class CropFragment extends BaseFragment implements ImageEditInte {
         @Override
         protected Bitmap doInBackground(Bitmap... params) {
             RectF cropRect = mCropPanel.getCropRect();// 剪切区域矩形
-            Matrix touchMatrix = activity.mainImage.getImageViewMatrix();
+            Matrix touchMatrix = activity.mainImage.getCurrentImageMatrix(null);
             // Canvas canvas = new Canvas(resultBit);
             float[] data = new float[9];
             touchMatrix.getValues(data);// 底部图片变化记录矩阵原始数据
@@ -291,7 +291,7 @@ public class CropFragment extends BaseFragment implements ImageEditInte {
 //			activity.mainImage.setImageBitmap(activity.mainBitmap);
 //			activity.mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
             activity.changeMainBitmap(result);
-            activity.mCropPanel.setCropRect(activity.mainImage.getBitmapRect());
+            activity.mCropPanel.setCropRect(activity.mainImage.getImageBound(null));
             activity.backToMain();
         }
     }

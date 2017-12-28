@@ -21,6 +21,7 @@ import com.yjing.imageeditlibrary.editimage.contorl.SaveMode;
 import com.yjing.imageeditlibrary.editimage.fragment.MainMenuFragment;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
 import com.yjing.imageeditlibrary.editimage.inter.SaveCompletedInte;
+import com.yjing.imageeditlibrary.editimage.view.PinchImageView;
 import com.yjing.imageeditlibrary.utils.BitmapUtils;
 import com.yjing.imageeditlibrary.utils.FileUtils;
 import com.yjing.imageeditlibrary.editimage.view.CropImageView;
@@ -53,7 +54,7 @@ public class EditImageActivity extends BaseActivity {
 
     private EditImageActivity mContext;
     public Bitmap mainBitmap;// 底层显示Bitmap
-    public ImageViewTouch mainImage;
+    public PinchImageView mainImage;
     private View backBtn;
 
     public ViewFlipper bannerFlipper;
@@ -122,7 +123,7 @@ public class EditImageActivity extends BaseActivity {
         saveBtn = findViewById(R.id.save_btn);
         saveBtn.setOnClickListener(new SaveBtnClick(true, null));
 
-        mainImage = (ImageViewTouch) findViewById(R.id.main_image);
+        mainImage = (PinchImageView) findViewById(R.id.main_image);
         backBtn = findViewById(R.id.back_btn);// 退出按钮
         backBtn.setOnClickListener(new OnClickListener() {
             @Override
@@ -196,7 +197,7 @@ public class EditImageActivity extends BaseActivity {
             }
             mainBitmap = result;
             mainImage.setImageBitmap(result);
-            mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+//            mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
             // mainImage.setDisplayType(DisplayType.FIT_TO_SCREEN);
         }
     }
@@ -363,7 +364,7 @@ public class EditImageActivity extends BaseActivity {
         }
         mainBitmap = newBit;
         mainImage.setImageBitmap(mainBitmap);
-        mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+//        mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
 
         increaseOpTimes();
     }

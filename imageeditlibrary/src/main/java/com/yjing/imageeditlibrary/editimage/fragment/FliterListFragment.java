@@ -75,7 +75,7 @@ public class FliterListFragment extends BaseFragment implements ImageEditInte {
         currentBitmap = activity.mainBitmap;
         fliterBit = null;
         activity.mainImage.setImageBitmap(activity.mainBitmap);// 返回原图
-        activity.mainImage.setScaleEnabled(true);
+//        activity.mainImage.setScaleEnabled(true);
     }
 
     /**
@@ -99,8 +99,8 @@ public class FliterListFragment extends BaseFragment implements ImageEditInte {
     public void onShow() {
 
         setCurrentBitmap(activity.mainBitmap);
-        activity.mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
-        activity.mainImage.setScaleEnabled(false);
+//        activity.mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+//        activity.mainImage.setScaleEnabled(false);
     }
 
     @Override

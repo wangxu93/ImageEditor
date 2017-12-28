@@ -92,14 +92,14 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
 
         mTextStickerView.setEditText(mInputText);
 
-        activity.mainImage.setFlingListener(new ImageViewTouch.OnImageFlingListener() {
+       /* activity.mainImage.setFlingListener(new ImageViewTouch.OnImageFlingListener() {
             @Override
             public void onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 if (velocityY > 1) {
                     hideInput();
                 }
             }
-        });
+        });*/
     }
 
     @Override
