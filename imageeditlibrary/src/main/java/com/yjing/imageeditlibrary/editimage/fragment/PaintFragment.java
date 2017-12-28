@@ -21,6 +21,7 @@ import com.yjing.imageeditlibrary.editimage.inter.SaveCompletedInte;
 import com.yjing.imageeditlibrary.editimage.task.StickerTask;
 import com.yjing.imageeditlibrary.editimage.view.ColorSeekBar;
 import com.yjing.imageeditlibrary.editimage.view.CustomPaintView;
+import com.yjing.imageeditlibrary.editimage.view.MainColorSelectorView;
 import com.yjing.imageeditlibrary.editimage.view.PaintModeView;
 
 
@@ -30,14 +31,12 @@ import com.yjing.imageeditlibrary.editimage.view.PaintModeView;
  * custom draw mode panel
  */
 public class PaintFragment extends BaseFragment implements View.OnClickListener, ImageEditInte {
-    private PaintModeView mPaintModeView;
-    private View popView;
+
     private CustomPaintView mPaintView;
-    private PopupWindow setStokenWidthWindow;
-    private SeekBar mStokenWidthSeekBar;
     private ImageView mRevokeView;
     private SaveCustomPaintTask mSavePaintImageTask;
-    private ColorSeekBar colorSeekBar;
+    private final static int DEFAULT_PAINT_WIDTH = 20;
+    private MainColorSelectorView colorSelectorView;
 
     public static PaintFragment newInstance(EditImageActivity activity) {
         PaintFragment fragment = new PaintFragment();
@@ -55,9 +54,9 @@ public class PaintFragment extends BaseFragment implements View.OnClickListener,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View mainView = inflater.inflate(R.layout.fragment_edit_paint, null);
-        mPaintModeView = (PaintModeView) mainView.findViewById(R.id.paint_thumb);
-        colorSeekBar = (ColorSeekBar) mainView.findViewById(R.id.colorSlider);
         mRevokeView = (ImageView) mainView.findViewById(R.id.paint_revoke);
+        colorSelectorView = (MainColorSelectorView) mainView.findViewById(R.id.colorSelectorView);
+        colorSelectorView.setOnColorSelector(onColorSelector);
         return mainView;
     }
 
@@ -65,25 +64,19 @@ public class PaintFragment extends BaseFragment implements View.OnClickListener,
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mPaintModeView.setOnClickListener(this);
-
-        initStokeWidthPopWindow();
-
         mRevokeView.setOnClickListener(this);
+        initPaintView();
 
-        colorSeekBar.setOnColorChangeListener(new ColorSeekBar.OnColorChangeListener() {
-            @Override
-            public void onColorChangeListener(int colorBarPosition, int alphaBarPosition, int color) {
-                setPaintColor(color);
-            }
-        });
+    }
+
+    private void initPaintView(){
+        this.mPaintView.setWidth(DEFAULT_PAINT_WIDTH);
+        this.mPaintView.setColor(Color.RED);
     }
 
     @Override
     public void onClick(View v) {
-        if (v == mPaintModeView) {//设置绘制画笔粗细
-            setStokeWidth();
-        } else if (v == mRevokeView) {//撤销功能
+         if (v == mRevokeView) {//撤销功能
             mPaintView.undo();
         }
     }
@@ -92,14 +85,11 @@ public class PaintFragment extends BaseFragment implements View.OnClickListener,
      * 返回主菜单
      */
     public void backToMain() {
-//        appleEdit(null);
         activity.mainImage.setVisibility(View.VISIBLE);
-//        this.mPaintView.setVisibility(View.GONE);
         mPaintView.setIsOperation(false);
     }
 
     public void onShow() {
-//        this.mPaintView.setVisibility(View.VISIBLE);
         mPaintView.setIsOperation(true);
     }
 
@@ -109,80 +99,10 @@ public class PaintFragment extends BaseFragment implements View.OnClickListener,
      * @param paintColor
      */
     protected void setPaintColor(final int paintColor) {
-        mPaintModeView.setPaintStrokeColor(paintColor);
-
-        updatePaintView();
+        mPaintView.setColor(paintColor);
     }
 
-    /**
-     * 更新画笔view
-     */
-    private void updatePaintView() {
 
-        this.mPaintView.setColor(mPaintModeView.getStokenColor());
-        this.mPaintView.setWidth(mPaintModeView.getStokenWidth());
-    }
-
-    /**
-     * 设置画笔粗细
-     * show popwidnow to set paint width
-     */
-    protected void setStokeWidth() {
-        if (popView.getMeasuredHeight() == 0) {
-            popView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        }
-
-        mStokenWidthSeekBar.setMax(mPaintModeView.getMeasuredHeight() / 2);
-
-        mStokenWidthSeekBar.setProgress((int) mPaintModeView.getStokenWidth());
-
-        mStokenWidthSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mPaintModeView.setPaintStrokeWidth(progress);
-                updatePaintView();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        int[] locations = new int[2];
-
-        activity.fl_main_menu.getLocationOnScreen(locations);
-        setStokenWidthWindow.showAtLocation(activity.fl_main_menu,
-                Gravity.NO_GRAVITY, 0, locations[1] - popView.getMeasuredHeight());
-    }
-
-    /**
-     * 画笔初始化以及设置画笔view的初始化
-     */
-    private void initStokeWidthPopWindow() {
-        popView = LayoutInflater.from(activity).
-                inflate(R.layout.view_set_stoke_width, null);
-        setStokenWidthWindow = new PopupWindow(popView, ViewGroup.LayoutParams.MATCH_PARENT
-                , ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        mStokenWidthSeekBar = (SeekBar) popView.findViewById(R.id.stoke_width_seekbar);
-
-        setStokenWidthWindow.setFocusable(true);
-        setStokenWidthWindow.setOutsideTouchable(true);
-        setStokenWidthWindow.setBackgroundDrawable(new BitmapDrawable());
-        setStokenWidthWindow.setAnimationStyle(R.style.popwin_anim_style);
-
-        //默认画笔颜色和宽度
-        mPaintModeView.setPaintStrokeColor(Color.RED);
-        mPaintModeView.setPaintStrokeWidth(20);
-
-        updatePaintView();
-    }
 
     @Override
     public void onDestroy() {
@@ -214,6 +134,13 @@ public class PaintFragment extends BaseFragment implements View.OnClickListener,
     public void method3() {
 
     }
+
+    private MainColorSelectorView.OnColorSelector onColorSelector = new MainColorSelectorView.OnColorSelector() {
+        @Override
+        public void onSelectColor(int color) {
+            setPaintColor(color);
+        }
+    };
 
     /**
      * 文字合成任务

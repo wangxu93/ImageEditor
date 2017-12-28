@@ -7,7 +7,7 @@
     android:layout_width="fill_parent"
     android:layout_height="@dimen/height_top_bar"
     android:layout_alignParentTop="true"
-    android:background="@color/top_bar_bg"
+    android:background="@color/tranf"
     tools:showIn="@layout/activity_image_edit">
 
     <TextView

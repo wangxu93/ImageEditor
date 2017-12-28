@@ -9,6 +9,7 @@
     <dimen name="materialcolorpicker__activity_vertical_margin">16dp</dimen>
     <dimen name="bottom_banner_height">45dp</dimen>
     <dimen name="bottom_tool_detail_height">70dp</dimen>
+    <dimen name="bottom_tool_paint_height">45dp</dimen>
 
     <dimen name="height_top_bar">50dp</dimen>
 </resources>
