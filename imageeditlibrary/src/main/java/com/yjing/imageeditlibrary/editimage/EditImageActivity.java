@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -20,6 +22,7 @@ import com.yjing.imageeditlibrary.R;
 import com.yjing.imageeditlibrary.editimage.contorl.SaveMode;
 import com.yjing.imageeditlibrary.editimage.fragment.MainMenuFragment;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
+import com.yjing.imageeditlibrary.editimage.inter.OnViewTouthListener;
 import com.yjing.imageeditlibrary.editimage.inter.SaveCompletedInte;
 import com.yjing.imageeditlibrary.editimage.view.PinchImageView;
 import com.yjing.imageeditlibrary.utils.BitmapUtils;
@@ -74,6 +77,9 @@ public class EditImageActivity extends BaseActivity {
     public SaveMode.EditFactory editFactory;
     public View fl_main_menu;
     public View banner;
+    private View titleBar;
+    private View rlBottomView;
+    private View fl_edit_above_mainmenu;
 
     /**
      * @param context
@@ -132,6 +138,17 @@ public class EditImageActivity extends BaseActivity {
             }
         });
 
+        titleBar = findViewById(R.id.titleBar);
+        rlBottomView = findViewById(R.id.flBottomView);
+        mainImage.addOuterMatrixChangedListener(new PinchImageView.OuterMatrixChangedListener() {
+            @Override
+            public void onOuterMatrixChanged(PinchImageView pinchImageView) {
+                Matrix ma = pinchImageView.getOuterMatrix(null);
+
+//                mPaintView.setMainLevelMatrix(ma);
+            }
+        });
+
         mStickerView = (StickerView) findViewById(R.id.sticker_panel);
         mCropPanel = (CropImageView) findViewById(R.id.crop_panel);
         mRotatePanel = (RotateImageView) findViewById(R.id.rotate_panel);
@@ -139,10 +156,12 @@ public class EditImageActivity extends BaseActivity {
         mPaintView = (CustomPaintView) findViewById(R.id.custom_paint_view);
         mMosaicView = (MosaicView) findViewById(R.id.mosaic_view);
 
+        mPaintView.setOnViewTouthListener(onViewTouthListener);
+
         //放功能键的容器
         View fl_edit_bottom_height = findViewById(R.id.fl_edit_bottom_height);
         View fl_edit_bottom_full = findViewById(R.id.fl_edit_bottom_full);
-        View fl_edit_above_mainmenu = findViewById(R.id.fl_edit_above_mainmenu);
+        fl_edit_above_mainmenu = findViewById(R.id.fl_edit_above_mainmenu);
         editFactory = new SaveMode.EditFactory(this, fl_edit_bottom_height, fl_edit_bottom_full, fl_edit_above_mainmenu);
 
         //主要按键布局
@@ -150,6 +169,32 @@ public class EditImageActivity extends BaseActivity {
         mMainMenuFragment = MainMenuFragment.newInstance(this);
         this.getSupportFragmentManager().beginTransaction().add(R.id.fl_main_menu, mMainMenuFragment)
                 .show(mMainMenuFragment).commit();
+    }
+
+    private OnViewTouthListener onViewTouthListener = new OnViewTouthListener() {
+        @Override
+        public void onTouchDown() {
+            setMainPageCoverViewStatus(View.GONE);
+        }
+
+        @Override
+        public void onTouchUp() {
+            setMainPageCoverViewStatus(View.VISIBLE);
+        }
+    };
+
+    private void setMainPageCoverViewStatus(int status){
+        titleBar.setVisibility(status);
+        rlBottomView.setVisibility(status);
+        if (status == View.VISIBLE) {
+            if (fl_edit_above_mainmenu.getVisibility() == View.GONE) {
+                fl_edit_above_mainmenu.setVisibility(View.VISIBLE);
+            }
+        }else{
+            if (fl_edit_above_mainmenu.getVisibility() == View.VISIBLE) {
+                fl_edit_above_mainmenu.setVisibility(View.GONE);
+            }
+        }
     }
 
     public void backToMain() {
@@ -269,28 +314,6 @@ public class EditImageActivity extends BaseActivity {
             modes = SaveMode.EditMode.values();
             modeIndex = 0;
             applyEdit();
-
-//            //对当前正在处理的状态进行保存
-//            ImageEditInte currentMode = editFactory.getCurrentMode();
-//            if (currentMode != null) {
-//                currentMode.appleEdit(new SaveCompletedInte() {
-//                    @Override
-//                    public void completed() {
-//                        if (mOpTimes == 0) {//并未修改图片
-//                            onSaveTaskDone();
-//                        } else {
-//                            doSaveImage();
-//                        }
-//                    }
-//                });
-//            } else {
-//                if (mOpTimes == 0) {//并未修改图片
-//                    onSaveTaskDone();
-//                } else {
-//                    doSaveImage();
-//                }
-//            }
-
         }
 
 

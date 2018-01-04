@@ -4,8 +4,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RectF;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
@@ -14,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.yjing.imageeditlibrary.editimage.inter.EditFunctionOperationInterface;
+import com.yjing.imageeditlibrary.editimage.inter.OnViewTouthListener;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -22,14 +25,15 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
     private Bitmap mDrawBit;
 
     private Canvas mPaintCanvas = null;
+    private Matrix mMatrix;
 
     private float last_x;
     private float last_y;
 
     private boolean isOperation = false;
     private Path mPath;
-
-
+    private OnViewTouthListener onViewTouthListener;
+    private float[] floats = new float[9];
     /**
      * 模拟栈，保存涂鸦操作，便于撤销
      */
@@ -127,6 +131,9 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // 每次down下去重新new一个Path
+                if (onViewTouthListener != null) {
+                    onViewTouthListener.onTouchDown();
+                }
                 mPath = new Path();
                 Log.i("wangyanjing", "新创建了一个mPath"+mPath.hashCode());
                 mPath.moveTo(x, y);
@@ -146,6 +153,9 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
+                if (onViewTouthListener != null) {
+                    onViewTouthListener.onTouchUp();
+                }
                 mUndoStack.add(new PaintPath(mPath, copyPaint()));
                 Log.i("wangyanjing", "数组里面加入了一个mPath"+mPath.hashCode()+"===="+mUndoStack.size());
                 mPaintCanvas.drawPath(mPath, mPaint);
@@ -154,6 +164,12 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
                 break;
         }
         return ret;
+    }
+
+
+
+    public void setOnViewTouthListener(OnViewTouthListener onViewTouthListener) {
+        this.onViewTouthListener = onViewTouthListener;
     }
 
     @Override
