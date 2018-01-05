@@ -26,7 +26,7 @@ import com.yjing.imageeditlibrary.editimage.view.TextStickerView;
 /**
  * 添加文本
  */
-public class AddTextFragment extends BaseFragment implements ImageEditInte {
+public class AddTextFragment extends BaseFragment implements ImageEditInte, View.OnClickListener {
 
     private View mainView;
 
@@ -63,10 +63,11 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
         mainView = inflater.inflate(R.layout.fragment_edit_image_add_text, null);
 
         mInputText = (EditText) mainView.findViewById(R.id.text_input);
+        View btnBack = mainView.findViewById(R.id.back_btn);
+        btnBack.setOnClickListener(this);
         save_btn = mainView.findViewById(R.id.save_btn);
         colorSeekBar = (MainColorSelectorView) mainView.findViewById(R.id.colorSlider);
         mInputText.setTextColor(mCurrentColor);
-//        changeTextColor(Color.RED);
 
         return mainView;
     }
@@ -180,6 +181,14 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
         activity.mainImage.setVisibility(View.VISIBLE);
 //        mTextStickerView.setVisibility(View.GONE);
         mTextStickerView.setIsOperation(false);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.back_btn) {
+            getActivity().onBackPressed();
+        }
     }
 
     /**

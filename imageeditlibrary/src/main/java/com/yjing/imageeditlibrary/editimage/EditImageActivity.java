@@ -496,6 +496,8 @@ public class EditImageActivity extends BaseActivity {
                 mTextStickerView.setText(text);
                 mTextStickerView.setIsOperation(true);
             }
+
+            SaveMode.getInstant().setMode(SaveMode.EditMode.NONE);
         }
     }
 }

@@ -25,5 +25,8 @@ public class AddTextActivity extends BaseActivity {
     public static void launch(Activity activity,int requestCode){
         Intent intent = new Intent(activity,AddTextActivity.class);
         activity.startActivityForResult(intent,requestCode);
+        if (activity instanceof Activity) {
+            ((Activity) activity).overridePendingTransition(0, 0);
+        }
     }
 }

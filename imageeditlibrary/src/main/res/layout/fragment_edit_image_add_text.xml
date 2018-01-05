@@ -27,6 +27,9 @@
                 android:textColor="@color/white"
                 android:textColorHint="@color/white" />
     </ScrollView>
+    <View android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#757b7e"/>
     <com.yjing.imageeditlibrary.editimage.view.MainColorSelectorView
         android:id="@+id/colorSlider"
         android:layout_width="match_parent"

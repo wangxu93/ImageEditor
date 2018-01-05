@@ -6,7 +6,7 @@
     <color name="materialcolorpicker__blue">#2196f3</color>
     <color name="materialcolorpicker__grey">#b3b3b3</color>
     <color name="materialcolorpicker__lightgrey">#d9d9d9</color>
-    <color name="materialcolorpicker__dribble">#ea4c89</color>
+    <color name="materialcolorpicker__dribble">#FF00FE</color>
     <color name="materialcolorpicker__dribbledark">#c32361</color>
     <color name="materialcolorpicker__black">#000000</color>
     <color name="materialcolorpicker__dialogcolor">#009688</color>
@@ -15,15 +15,15 @@
     <color name="yello">#F8F8FF00</color>
     <color name="darkgray">#938192</color>
     <color name="lightgreen">#7cd12e</color>
-    <color name="blue">#ff0000ff</color>
+    <color name="blue">#007AFF</color>
     <color name="cyan">#ff00ffff</color>
     <color name="gray">#ff888888</color>
-    <color name="green">#ff00ff00</color>
+    <color name="green">#64DA38</color>
     <color name="ltgray">#ffcccccc</color>
-    <color name="magenta">#ffff00ff</color>
+    <color name="magenta">#9600FF</color>
     <color name="red">#ffff0000</color>
     <color name="transparent">#00000000</color>
-    <color name="yellow">#ffffff00</color>
+    <color name="yellow">#FF9300</color>
 
     <color name="black">#000000</color>
     <color name="top_bar_bg">#333333</color>
