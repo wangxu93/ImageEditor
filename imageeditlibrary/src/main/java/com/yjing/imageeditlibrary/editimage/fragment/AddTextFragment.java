@@ -1,13 +1,14 @@
 package com.yjing.imageeditlibrary.editimage.fragment;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -18,9 +19,8 @@ import com.yjing.imageeditlibrary.editimage.EditImageActivity;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
 import com.yjing.imageeditlibrary.editimage.inter.SaveCompletedInte;
 import com.yjing.imageeditlibrary.editimage.task.StickerTask;
-import com.yjing.imageeditlibrary.editimage.view.ColorSeekBar;
+import com.yjing.imageeditlibrary.editimage.view.MainColorSelectorView;
 import com.yjing.imageeditlibrary.editimage.view.TextStickerView;
-import com.yjing.imageeditlibrary.editimage.view.imagezoom.ImageViewTouch;
 
 
 /**
@@ -31,10 +31,10 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
     private View mainView;
 
     private EditText mInputText;//输入框
-    private ColorSeekBar colorSeekBar;//颜色选择器
+    private MainColorSelectorView colorSeekBar;//颜色选择器
     private TextStickerView mTextStickerView;// 文字贴图显示控件
+    private int mCurrentColor = Color.RED;
 
-    private int mTextColor = Color.WHITE;
     private InputMethodManager imm;
 
     private SaveTextStickerTask mSaveTask;
@@ -45,6 +45,10 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
         fragment.activity = activity;
         fragment.mTextStickerView = activity.mTextStickerView;
         return fragment;
+    }
+
+    public static AddTextFragment newInstance(){
+        return new AddTextFragment();
     }
 
     @Override
@@ -60,7 +64,10 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
 
         mInputText = (EditText) mainView.findViewById(R.id.text_input);
         save_btn = mainView.findViewById(R.id.save_btn);
-        colorSeekBar = (ColorSeekBar) mainView.findViewById(R.id.colorSlider);
+        colorSeekBar = (MainColorSelectorView) mainView.findViewById(R.id.colorSlider);
+        mInputText.setTextColor(mCurrentColor);
+//        changeTextColor(Color.RED);
+
         return mainView;
     }
 
@@ -68,14 +75,15 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        colorSeekBar.setOnColorChangeListener(new ColorSeekBar.OnColorChangeListener() {
+        colorSeekBar.setOnColorSelector(new MainColorSelectorView.OnColorSelector() {
             @Override
-            public void onColorChangeListener(int colorBarPosition, int alphaBarPosition, int color) {
-
+            public void onSelectColor(int color) {
                 mInputText.setTextColor(color);
-                changeTextColor(color);
+                mCurrentColor = color;
+//                changeTextColor(color);
             }
         });
+
         save_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,6 +91,14 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
                 hideInput();
                 //保存文字
                 String text = mInputText.getText().toString().trim();
+                if (mTextStickerView == null) {
+                    Intent data = new Intent();
+                    data.putExtra("text",text);
+                    data.putExtra("textcolor",mCurrentColor);
+                    getActivity().setResult(Activity.RESULT_OK,data);
+                    getActivity().finish();
+                    return;
+                }
                 mTextStickerView.setText(text);
                 activity.editFactory.setContainerVisiable(AddTextFragment.this, View.GONE);
                 mainView.setVisibility(View.GONE);
@@ -90,19 +106,11 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
             }
         });
 
-        mTextStickerView.setEditText(mInputText);
+//        mTextStickerView.setEditText(mInputText);
 
-       /* activity.mainImage.setFlingListener(new ImageViewTouch.OnImageFlingListener() {
-            @Override
-            public void onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (velocityY > 1) {
-                    hideInput();
-                }
-            }
-        });*/
     }
 
-    @Override
+        @Override
     public void appleEdit(SaveCompletedInte inte) {
         if (mSaveTask != null) {
             mSaveTask.cancel(true);
@@ -116,7 +124,7 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
     public void onShow() {
         mainView.setVisibility(View.VISIBLE);
 //        mTextStickerView.setVisibility(View.VISIBLE);
-        mTextStickerView.setIsOperation(true);
+//        mTextStickerView.setIsOperation(true);
 //        if (mInputText != null) {
 //            mInputText.clearFocus();
 //        }
@@ -140,8 +148,7 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
      * @param newColor
      */
     private void changeTextColor(int newColor) {
-        this.mTextColor = newColor;
-        mTextStickerView.setTextColor(mTextColor);
+        mTextStickerView.setTextColor(newColor);
     }
 
     public void hideInput() {
@@ -187,6 +194,9 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
 
         @Override
         public void handleImage(Canvas canvas, Matrix m) {
+            if (mTextStickerView == null) {
+                return;
+            }
             float[] f = new float[9];
             m.getValues(f);
             int dx = (int) f[Matrix.MTRANS_X];
@@ -203,6 +213,9 @@ public class AddTextFragment extends BaseFragment implements ImageEditInte {
 
         @Override
         public void onPostResult(Bitmap result) {
+            if (mTextStickerView == null) {
+                return;
+            }
             mTextStickerView.clearTextContent();
             mTextStickerView.resetView();
 

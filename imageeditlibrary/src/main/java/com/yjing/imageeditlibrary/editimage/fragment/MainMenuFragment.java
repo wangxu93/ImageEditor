@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.yjing.imageeditlibrary.R;
+import com.yjing.imageeditlibrary.editimage.AddTextActivity;
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
 import com.yjing.imageeditlibrary.editimage.contorl.SaveMode;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
@@ -96,6 +97,10 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             SaveMode.getInstant().setMode(clickMode);
             //2.重新设置mainImage。（因为在模式发生变化时，mainBitmap可能会被更新）
             activity.mainImage.setImageBitmap(activity.mainBitmap);
+            if (clickMode == SaveMode.EditMode.TEXT) {  //添加文字独立处理
+                AddTextActivity.launch(activity,EditImageActivity.REQUESTCODE_ADDTEXT);
+                return;
+            }
             //3.设置当前模式改变之后要显示的fragment
             activity.editFactory.setCurrentEditMode(clickMode);
             //4.显示fragment时，需要进行初始化

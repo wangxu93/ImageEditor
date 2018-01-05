@@ -87,7 +87,7 @@
             android:id="@+id/fl_edit_bottom_full"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/bottom_banner_bg"
+            android:background="#99000000"
             android:visibility="gone"></FrameLayout>
 
     </RelativeLayout>

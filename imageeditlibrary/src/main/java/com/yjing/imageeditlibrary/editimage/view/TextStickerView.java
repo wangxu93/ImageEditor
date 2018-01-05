@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -76,6 +77,8 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
     private List<String> mTextContents = new ArrayList<String>(2);//存放所写的文字内容
     private String mText;
     private boolean isOperation = false;
+    private Matrix mMatrix;
+    private float[] floats = new float[]{1,0,0,0,1,0,0,0,1};
 
     public TextStickerView(Context context) {
         super(context);
@@ -149,6 +152,9 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
             return;
 
         parseText();
+        this.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        canvas.concat(mMatrix);
+        this.setLayerType(View.LAYER_TYPE_NONE, null);
         drawContent(canvas);
     }
 
@@ -250,6 +256,10 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
         int action = event.getAction();
         float x = event.getX();
         float y = event.getY();
+
+        x = (int) ((Math.abs(floats[2]) + x) / floats[0]);
+        y = (int) ((Math.abs(floats[5]) + y) / floats[4]);
+
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 if (mDeleteDstRect.contains(x, y)) {// 删除模式
@@ -320,6 +330,12 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
         }
         mTextContents.clear();
         setText(null);
+    }
+
+    public void setMainLevelMatrix(Matrix matrix){
+        mMatrix = matrix;
+        mMatrix.getValues(floats);
+        postInvalidate();
     }
 
 

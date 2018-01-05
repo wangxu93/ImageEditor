@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.os.AsyncTask;
@@ -20,6 +21,7 @@ import android.widget.ViewFlipper;
 import com.yjing.imageeditlibrary.BaseActivity;
 import com.yjing.imageeditlibrary.R;
 import com.yjing.imageeditlibrary.editimage.contorl.SaveMode;
+import com.yjing.imageeditlibrary.editimage.fragment.AddTextFragment;
 import com.yjing.imageeditlibrary.editimage.fragment.MainMenuFragment;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
 import com.yjing.imageeditlibrary.editimage.inter.OnViewTouthListener;
@@ -46,6 +48,8 @@ public class EditImageActivity extends BaseActivity {
     public static final String SAVE_FILE_PATH = "save_file_path";
 
     public static final String IMAGE_IS_EDIT = "image_is_edit";
+
+    public static final int REQUESTCODE_ADDTEXT = 0xFF00;
 
     public String filePath;// 需要编辑图片路径
     public String saveFilePath;// 生成的新图片路径
@@ -146,6 +150,7 @@ public class EditImageActivity extends BaseActivity {
                 Matrix ma = pinchImageView.getOuterMatrix(null);
                 mPaintView.setMainLevelMatrix(ma);
                 mMosaicView.setMainLevelMatrix(ma);
+                mTextStickerView.setMainLevelMatrix(ma);
             }
         });
 
@@ -477,4 +482,20 @@ public class EditImageActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUESTCODE_ADDTEXT) {
+            if (data != null && resultCode == Activity.RESULT_OK) {
+                String text = data.getStringExtra("text");
+                int color = data.getIntExtra("textcolor", Color.RED);
+                if (TextUtils.isEmpty(text)) {
+                    return;
+                }
+                mTextStickerView.setTextColor(color);
+                mTextStickerView.setText(text);
+                mTextStickerView.setIsOperation(true);
+            }
+        }
+    }
 }
