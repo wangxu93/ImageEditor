@@ -22,7 +22,13 @@ public class AddTextActivity extends BaseActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_fragment_continer,addTextFragment).commit();
     }
 
-    public static void launch(Activity activity,int requestCode){
+    @Override
+    protected void onPause() {
+        overridePendingTransition(0,0);
+        super.onPause();
+    }
+
+    public static void launch(Activity activity, int requestCode){
         Intent intent = new Intent(activity,AddTextActivity.class);
         activity.startActivityForResult(intent,requestCode);
         if (activity instanceof Activity) {
