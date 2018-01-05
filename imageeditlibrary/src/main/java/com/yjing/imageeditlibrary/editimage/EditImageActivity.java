@@ -145,6 +145,7 @@ public class EditImageActivity extends BaseActivity {
             public void onOuterMatrixChanged(PinchImageView pinchImageView) {
                 Matrix ma = pinchImageView.getOuterMatrix(null);
                 mPaintView.setMainLevelMatrix(ma);
+                mMosaicView.setMainLevelMatrix(ma);
             }
         });
 
@@ -155,6 +156,8 @@ public class EditImageActivity extends BaseActivity {
         mPaintView = (CustomPaintView) findViewById(R.id.custom_paint_view);
         mMosaicView = (MosaicView) findViewById(R.id.mosaic_view);
 
+
+        mMosaicView.setOnViewTouthListener(onViewTouthListener);
         mPaintView.setOnViewTouthListener(onViewTouthListener);
 
         //放功能键的容器

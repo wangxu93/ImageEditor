@@ -30,5 +30,10 @@
         android:layout_marginRight="12dp"
         android:layout_marginLeft="10dp"
         android:src="@drawable/edit_image_revoke_btn" />
+    <View
+        android:layout_below="@+id/colorSelectorView"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#757b7e"/>
 
 </RelativeLayout>

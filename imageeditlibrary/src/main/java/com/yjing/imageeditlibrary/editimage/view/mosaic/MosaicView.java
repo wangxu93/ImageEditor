@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.CornerPathEffect;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
@@ -18,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.yjing.imageeditlibrary.editimage.inter.EditFunctionOperationInterface;
+import com.yjing.imageeditlibrary.editimage.inter.OnViewTouthListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,26 +70,27 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
      */
     private MosaicUtil.Effect mosaicEffect = MosaicUtil.Effect.MOSAIC;
     private MosaicPath touchPath;
+    private Matrix mMatrix;
+    private float[] floats = new float[]{1,0,0,0,1,0,0,0,1};
+
+    private OnViewTouthListener onViewTouthListener;
 
     public MosaicView(Context context) {
-        super(context);
-        this.mContext = context;
-        initDrawView();
+        this(context,null);
     }
 
     public MosaicView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        this.mContext = context;
-        initDrawView();
+        this(context, attrs,0);
     }
 
     public MosaicView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+        this.mContext = context;
+        initDrawView();
     }
 
-    private void init(Context context) {
-
+    public void setOnViewTouthListener(OnViewTouthListener onViewTouthListener) {
+        this.onViewTouthListener = onViewTouthListener;
     }
 
     /**
@@ -204,11 +207,18 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
         }
 
         float ratio = (mImageRect.right - mImageRect.left) / (float) mImageWidth;
+
+        x = (int) ((Math.abs(floats[2]) + x) / floats[0]);
+        y = (int) ((Math.abs(floats[5]) + y) / floats[4]);
+
         x = (int) ((x - mImageRect.left) / ratio);
         y = (int) ((y - mImageRect.top) / ratio);
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                if (onViewTouthListener != null) {
+                    onViewTouthListener.onTouchDown();
+                }
                 touchPath = new MosaicPath();
                 touchPath.drawPath = new Path();
                 touchPath.drawPath.moveTo(x, y);
@@ -223,12 +233,21 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
+                if (onViewTouthListener != null) {
+                    onViewTouthListener.onTouchUp();
+                }
             case MotionEvent.ACTION_CANCEL:
 
                 break;
 
         }
         return true;
+    }
+
+    public void setMainLevelMatrix(Matrix matrix){
+        mMatrix = matrix;
+        matrix.getValues(floats);
+        postInvalidate();
     }
 
     /**
@@ -322,6 +341,9 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (bmMosaicLayer != null) {
+            this.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            canvas.concat(mMatrix);
+            this.setLayerType(View.LAYER_TYPE_NONE, null);
             canvas.drawBitmap(bmMosaicLayer, null, mImageRect, null);
         }
     }
