@@ -33,7 +33,7 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
     private boolean isOperation = false;
     private Path mPath;
     private OnViewTouthListener onViewTouthListener;
-    private float[] floats = new float[9];
+    private float[] floats = new float[]{1,0,0,0,1,0,0,0,1};
     /**
      * 模拟栈，保存涂鸦操作，便于撤销
      */
@@ -112,6 +112,11 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (mDrawBit != null) {
+
+            this.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            canvas.concat(mMatrix);
+            this.setLayerType(View.LAYER_TYPE_NONE, null);
+
             canvas.drawBitmap(mDrawBit, 0, 0, null);
         }
     }
@@ -127,6 +132,8 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
         boolean ret = super.onTouchEvent(event);
         float x = event.getX();
         float y = event.getY();
+        float descX = (float) ((Math.abs(floats[2]) + x) / floats[0]);
+        float descY = (float) ((Math.abs(floats[5]) + y) / floats[4]);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -135,8 +142,7 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
                     onViewTouthListener.onTouchDown();
                 }
                 mPath = new Path();
-                Log.i("wangyanjing", "新创建了一个mPath"+mPath.hashCode());
-                mPath.moveTo(x, y);
+                mPath.moveTo(descX, descY);
                 ret = true;
                 last_x = x;
                 last_y = y;
@@ -144,8 +150,9 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
             case MotionEvent.ACTION_MOVE:
                 ret = true;
                 // 从x1,y1到x2,y2画一条贝塞尔曲线，更平滑(直接用mPath.lineTo也是可以的)
-                mPath.lineTo(x, y);
+                mPath.lineTo(descX, descY);
                 mPaintCanvas.drawPath(mPath, mPaint);
+
 //                mPaintCanvas.drawLine(last_x, last_y, x, y, mPaint);
                 last_x = x;
                 last_y = y;
@@ -166,6 +173,11 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
         return ret;
     }
 
+    public void setMainLevelMatrix(Matrix matrix){
+        mMatrix = matrix;
+        mMatrix.getValues(floats);
+        postInvalidate();
+    }
 
 
     public void setOnViewTouthListener(OnViewTouthListener onViewTouthListener) {

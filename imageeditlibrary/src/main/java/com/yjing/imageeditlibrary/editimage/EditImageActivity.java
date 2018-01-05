@@ -144,8 +144,7 @@ public class EditImageActivity extends BaseActivity {
             @Override
             public void onOuterMatrixChanged(PinchImageView pinchImageView) {
                 Matrix ma = pinchImageView.getOuterMatrix(null);
-
-//                mPaintView.setMainLevelMatrix(ma);
+                mPaintView.setMainLevelMatrix(ma);
             }
         });
 
