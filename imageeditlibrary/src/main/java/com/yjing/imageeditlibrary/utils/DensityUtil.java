@@ -1,9 +1,18 @@
 package com.yjing.imageeditlibrary.utils;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 
 public class DensityUtil {
 
+    private static DisplayMetrics dm = null;
+    static public DisplayMetrics getDisplayMetrics(Context context){
+        if(dm == null){
+            dm = context.getResources().getDisplayMetrics();
+//			L.i(dm.toString());
+        }
+        return dm;
+    }
     /**
      * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
      */
@@ -18,5 +27,10 @@ public class DensityUtil {
     public static int px2dip(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
+    }
+
+    static public int getScreenHeightInPx(Context context){
+        getDisplayMetrics(context);
+        return dm.heightPixels;
     }
 }
