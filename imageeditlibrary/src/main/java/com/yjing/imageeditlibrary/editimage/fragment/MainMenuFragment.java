@@ -1,16 +1,22 @@
 package com.yjing.imageeditlibrary.editimage.fragment;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.yalantis.ucrop.UCrop;
 import com.yjing.imageeditlibrary.R;
 import com.yjing.imageeditlibrary.editimage.AddTextActivity;
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
 import com.yjing.imageeditlibrary.editimage.contorl.SaveMode;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
+
+import java.io.File;
 
 /**
  * 工具栏主菜单
@@ -25,6 +31,7 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
     private View mTextBtn;//文字型贴图添加
     private View mPaintBtn;//编辑按钮
     private View mosaicBtn;//马赛克按钮
+    private String mImageUrl;
 
     public static MainMenuFragment newInstance(EditImageActivity activity) {
         MainMenuFragment fragment = new MainMenuFragment();
@@ -70,6 +77,9 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         SaveMode.EditMode preMode = SaveMode.getInstant().getMode();//点击之前处于的编辑模式
         SaveMode.EditMode clickMode = getEditModeForView(v);
+        if (TextUtils.isEmpty(mImageUrl)) {
+            return;
+        }
         //1.确定当前要处于模式
         if (preMode == clickMode) {//如果点击前和点击后处于一种模式，则隐藏当前编辑模式（设置当前模式为NONE）
             clickMode = SaveMode.EditMode.NONE;
@@ -99,6 +109,19 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             activity.mainImage.setImageBitmap(activity.mainBitmap);
             if (clickMode == SaveMode.EditMode.TEXT) {  //添加文字独立处理
                 AddTextActivity.launch(activity,EditImageActivity.REQUESTCODE_ADDTEXT);
+                activity.editFactory.hideFragment(activity.editFactory.getFragment(clickMode));
+                return;
+            }else if(clickMode == SaveMode.EditMode.CROP){
+                UCrop.Options options = new UCrop.Options();
+                options.setFreeStyleCropEnabled(true);
+                options.setHideBottomControls(true);
+                File file = new File(mImageUrl);
+                File file1 = new File(Environment.getExternalStorageDirectory().getAbsoluteFile().toString() + "/testCrop/");
+                UCrop.of(Uri.fromFile(file),Uri.fromFile(file1))
+                        .withAspectRatio(16, 9)
+                        .withOptions(options)
+                        .start(activity);
+                activity.editFactory.hideFragment(activity.editFactory.getFragment(clickMode));
                 return;
             }
             //3.设置当前模式改变之后要显示的fragment
@@ -108,6 +131,10 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             //5.保存应用图标的更改
 //            activity.bannerFlipper.showNext();
         }
+    }
+
+    public void setImageURl(String url){
+        mImageUrl = url;
     }
 
     private View getButtonForMode(SaveMode.EditMode mode) {

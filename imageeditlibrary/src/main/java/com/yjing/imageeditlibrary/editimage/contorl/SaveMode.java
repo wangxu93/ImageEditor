@@ -1,11 +1,15 @@
 package com.yjing.imageeditlibrary.editimage.contorl;
 
 
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
+import com.yalantis.ucrop.UCrop;
+import com.yjing.imageeditlibrary.editimage.AddTextActivity;
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
 import com.yjing.imageeditlibrary.editimage.fragment.AddTextFragment;
 import com.yjing.imageeditlibrary.editimage.fragment.CropFragment;
@@ -17,6 +21,7 @@ import com.yjing.imageeditlibrary.editimage.fragment.RotateFragment;
 import com.yjing.imageeditlibrary.editimage.fragment.StirckerFragment;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -128,7 +133,7 @@ public class SaveMode {
         }
 
         //隐藏所有fragment
-        private void hideFragment(Fragment x) {
+        public void hideFragment(Fragment x) {
             List<Fragment> fragments = supportFragmentManager.getFragments();
             FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
             for (Fragment fragment : fragments) {

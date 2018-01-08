@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -18,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.yalantis.ucrop.UCrop;
 import com.yjing.imageeditlibrary.BaseActivity;
 import com.yjing.imageeditlibrary.R;
 import com.yjing.imageeditlibrary.editimage.contorl.SaveMode;
@@ -116,6 +118,9 @@ public class EditImageActivity extends BaseActivity {
         filePath = getIntent().getStringExtra(FILE_PATH);
         saveFilePath = getIntent().getStringExtra(EXTRA_OUTPUT);// 保存图片路径
         loadImage(filePath);
+        if (mMainMenuFragment != null) {
+            mMainMenuFragment.setImageURl(filePath);
+        }
     }
 
     private void initView() {
@@ -147,10 +152,7 @@ public class EditImageActivity extends BaseActivity {
         mainImage.addOuterMatrixChangedListener(new PinchImageView.OuterMatrixChangedListener() {
             @Override
             public void onOuterMatrixChanged(PinchImageView pinchImageView) {
-                Matrix ma = pinchImageView.getOuterMatrix(null);
-                mPaintView.setMainLevelMatrix(ma);
-                mMosaicView.setMainLevelMatrix(ma);
-                mTextStickerView.setMainLevelMatrix(ma);
+                getMainImageParams(pinchImageView);
             }
         });
 
@@ -177,6 +179,17 @@ public class EditImageActivity extends BaseActivity {
         mMainMenuFragment = MainMenuFragment.newInstance(this);
         this.getSupportFragmentManager().beginTransaction().add(R.id.fl_main_menu, mMainMenuFragment)
                 .show(mMainMenuFragment).commit();
+    }
+
+    private void getMainImageParams(PinchImageView view){
+        if (view == null) {
+            return;
+        }
+        Matrix ma = view.getOuterMatrix(null);
+        RectF imageBound = view.getImageBound(null);
+        mPaintView.setMainLevelMatrix(ma,imageBound);
+        mMosaicView.setMainLevelMatrix(ma);
+        mTextStickerView.setMainLevelMatrix(ma,imageBound);
     }
 
     private OnViewTouthListener onViewTouthListener = new OnViewTouthListener() {
@@ -250,6 +263,7 @@ public class EditImageActivity extends BaseActivity {
             }
             mainBitmap = result;
             mainImage.setImageBitmap(result);
+            getMainImageParams(mainImage);
 //            mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
             // mainImage.setDisplayType(DisplayType.FIT_TO_SCREEN);
         }
@@ -498,6 +512,12 @@ public class EditImageActivity extends BaseActivity {
                 mTextStickerView.setIsOperation(true);
             }
 
+            SaveMode.getInstant().setMode(SaveMode.EditMode.NONE);
+        } else if (requestCode == UCrop.REQUEST_CROP) {
+            if (data != null && resultCode == Activity.RESULT_OK) {
+                final Uri resultUri = UCrop.getOutput(data);
+                loadImage(resultUri.getSchemeSpecificPart());
+            }
             SaveMode.getInstant().setMode(SaveMode.EditMode.NONE);
         }
     }

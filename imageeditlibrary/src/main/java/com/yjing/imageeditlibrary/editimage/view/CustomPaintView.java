@@ -38,6 +38,7 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
      * 模拟栈，保存涂鸦操作，便于撤销
      */
     private CopyOnWriteArrayList<PaintPath> mUndoStack = new CopyOnWriteArrayList<>();
+    private RectF mRoundRectf;
 
     public CustomPaintView(Context context) {
         super(context);
@@ -137,10 +138,13 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                // 每次down下去重新new一个Path
+                if (!checkIsOnBounds(descX,descY)) {
+                    return false;
+                }
                 if (onViewTouthListener != null) {
                     onViewTouthListener.onTouchDown();
                 }
+                // 每次down下去重新new一个Path
                 mPath = new Path();
                 mPath.moveTo(descX, descY);
                 ret = true;
@@ -148,10 +152,24 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
                 last_y = y;
                 break;
             case MotionEvent.ACTION_MOVE:
+                if (!checkIsOnBounds(descX,descY)) {
+                    if (onViewTouthListener != null) {
+                        onViewTouthListener.onTouchUp();
+                    }
+                    return false;
+                }
                 ret = true;
                 // 从x1,y1到x2,y2画一条贝塞尔曲线，更平滑(直接用mPath.lineTo也是可以的)
-                mPath.lineTo(descX, descY);
-                mPaintCanvas.drawPath(mPath, mPaint);
+                if (mPath == null) {
+                    mPath = new Path();
+                    mPath.moveTo(descX,descY);
+                    ret = true;
+                    last_x = x;
+                    last_y = y;
+                }else {
+                    mPath.lineTo(descX, descY);
+                    mPaintCanvas.drawPath(mPath, mPaint);
+                }
 
 //                mPaintCanvas.drawLine(last_x, last_y, x, y, mPaint);
                 last_x = x;
@@ -173,8 +191,16 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
         return ret;
     }
 
-    public void setMainLevelMatrix(Matrix matrix){
+    private boolean checkIsOnBounds(float x, float y){
+        if (mRoundRectf == null) {
+            return true;
+        }
+        return mRoundRectf.contains(x,y);
+    }
+
+    public void setMainLevelMatrix(Matrix matrix,RectF rectF){
         mMatrix = matrix;
+        mRoundRectf = rectF;
         mMatrix.getValues(floats);
         postInvalidate();
     }

@@ -228,7 +228,17 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
                 touchPaths.add(touchPath);
                 break;
             case MotionEvent.ACTION_MOVE:
-                touchPath.drawPath.lineTo(x, y);
+                if (touchPath == null) {
+                    touchPath = new MosaicPath();
+                    touchPath.drawPath = new Path();
+                    touchPath.drawPath.moveTo(x, y);
+                    touchPath.effect = mosaicEffect;
+                    touchPath.paintWidth = mBrushWidth;
+
+                    touchPaths.add(touchPath);
+                }else {
+                    touchPath.drawPath.lineTo(x, y);
+                }
                 updatePathMosaic();
                 invalidate();
                 break;

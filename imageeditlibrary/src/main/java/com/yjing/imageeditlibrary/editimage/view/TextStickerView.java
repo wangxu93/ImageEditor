@@ -81,6 +81,7 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
     private Matrix mMatrix;
     private float[] floats = new float[]{1,0,0,0,1,0,0,0,1};
     private OnViewTouthListener onViewTouthListener;
+    private RectF mBoundRectf;
 
     public TextStickerView(Context context) {
         super(context);
@@ -262,6 +263,13 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
         x = (int) ((Math.abs(floats[2]) + x) / floats[0]);
         y = (int) ((Math.abs(floats[5]) + y) / floats[4]);
 
+        if (!checkIsOnBounds(x,y)) {
+            if (onViewTouthListener != null) {
+                onViewTouthListener.onTouchUp();
+            }
+            return false;
+        }
+
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 if (mDeleteDstRect.contains(x, y)) {// 删除模式
@@ -344,8 +352,16 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
         setText(null);
     }
 
-    public void setMainLevelMatrix(Matrix matrix){
+    private boolean checkIsOnBounds(float x, float y){
+        if (mBoundRectf == null) {
+            return true;
+        }
+        return mBoundRectf.contains(x,y);
+    }
+
+    public void setMainLevelMatrix(Matrix matrix,RectF rectF){
         mMatrix = matrix;
+        mBoundRectf = rectF;
         mMatrix.getValues(floats);
         postInvalidate();
     }
