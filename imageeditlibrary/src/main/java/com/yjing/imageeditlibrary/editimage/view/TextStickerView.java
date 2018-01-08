@@ -18,6 +18,7 @@ import android.widget.EditText;
 
 import com.yjing.imageeditlibrary.R;
 import com.yjing.imageeditlibrary.editimage.inter.EditFunctionOperationInterface;
+import com.yjing.imageeditlibrary.editimage.inter.OnViewTouthListener;
 import com.yjing.imageeditlibrary.utils.RectUtil;
 
 import java.util.ArrayList;
@@ -79,6 +80,7 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
     private boolean isOperation = false;
     private Matrix mMatrix;
     private float[] floats = new float[]{1,0,0,0,1,0,0,0,1};
+    private OnViewTouthListener onViewTouthListener;
 
     public TextStickerView(Context context) {
         super(context);
@@ -277,6 +279,9 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
                     last_x = x;
                     last_y = y;
                     ret = true;
+                    if (onViewTouthListener != null) {
+                        onViewTouthListener.onTouchDown();
+                    }
                 } else {
                     isShowHelpBox = false;
                     invalidate();
@@ -316,12 +321,19 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
+                if (onViewTouthListener != null) {
+                    onViewTouthListener.onTouchUp();
+                }
                 ret = false;
                 mCurrentMode = IDLE_MODE;
                 break;
         }// end switch
 
         return ret;
+    }
+
+    public void setOnViewTouthListener(OnViewTouthListener onViewTouthListener) {
+        this.onViewTouthListener = onViewTouthListener;
     }
 
     public void clearTextContent() {

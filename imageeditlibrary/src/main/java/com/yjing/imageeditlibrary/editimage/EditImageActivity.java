@@ -164,6 +164,7 @@ public class EditImageActivity extends BaseActivity {
 
         mMosaicView.setOnViewTouthListener(onViewTouthListener);
         mPaintView.setOnViewTouthListener(onViewTouthListener);
+        mTextStickerView.setOnViewTouthListener(onViewTouthListener);
 
         //放功能键的容器
         View fl_edit_bottom_height = findViewById(R.id.fl_edit_bottom_height);
