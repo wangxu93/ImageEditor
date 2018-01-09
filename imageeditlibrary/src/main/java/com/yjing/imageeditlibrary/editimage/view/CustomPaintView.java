@@ -141,9 +141,6 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
                 if (!checkIsOnBounds(descX,descY)) {
                     return false;
                 }
-                if (onViewTouthListener != null) {
-                    onViewTouthListener.onTouchDown();
-                }
                 // 每次down下去重新new一个Path
                 mPath = new Path();
                 mPath.moveTo(descX, descY);
@@ -157,6 +154,9 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
                         onViewTouthListener.onTouchUp();
                     }
                     return false;
+                }
+                if (onViewTouthListener != null) {
+                    onViewTouthListener.onTouchDown();
                 }
                 ret = true;
                 // 从x1,y1到x2,y2画一条贝塞尔曲线，更平滑(直接用mPath.lineTo也是可以的)

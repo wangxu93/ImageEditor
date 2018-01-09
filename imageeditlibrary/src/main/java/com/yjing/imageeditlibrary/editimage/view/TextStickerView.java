@@ -287,9 +287,6 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
                     last_x = x;
                     last_y = y;
                     ret = true;
-                    if (onViewTouthListener != null) {
-                        onViewTouthListener.onTouchDown();
-                    }
                 } else {
                     isShowHelpBox = false;
                     invalidate();
@@ -304,6 +301,9 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
             case MotionEvent.ACTION_MOVE:
                 ret = true;
                 if (mCurrentMode == MOVE_MODE) {// 移动贴图
+                    if (onViewTouthListener != null) {
+                        onViewTouthListener.onTouchDown();
+                    }
                     mCurrentMode = MOVE_MODE;
                     float dx = x - last_x;
                     float dy = y - last_y;

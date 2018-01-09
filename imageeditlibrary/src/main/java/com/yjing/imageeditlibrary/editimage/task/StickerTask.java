@@ -36,7 +36,7 @@ public abstract class StickerTask extends AsyncTask<Bitmap, Void, Bitmap> {
 
         dialog = mContext.getLoadingDialog(mContext, R.string.saving_image,
                 false);
-        dialog.show();
+//        dialog.show();
     }
 
     @Override

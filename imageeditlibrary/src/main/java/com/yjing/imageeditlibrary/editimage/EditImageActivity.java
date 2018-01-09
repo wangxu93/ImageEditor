@@ -40,6 +40,8 @@ import com.yjing.imageeditlibrary.editimage.view.imagezoom.ImageViewTouch;
 import com.yjing.imageeditlibrary.editimage.view.imagezoom.ImageViewTouchBase;
 import com.yjing.imageeditlibrary.editimage.view.mosaic.MosaicView;
 
+import java.io.File;
+
 /**
  * 图片编辑 主页面
  * 包含 1.贴图 2.滤镜 3.剪裁 4.底图旋转 功能
@@ -118,9 +120,6 @@ public class EditImageActivity extends BaseActivity {
         filePath = getIntent().getStringExtra(FILE_PATH);
         saveFilePath = getIntent().getStringExtra(EXTRA_OUTPUT);// 保存图片路径
         loadImage(filePath);
-        if (mMainMenuFragment != null) {
-            mMainMenuFragment.setImageURl(filePath);
-        }
     }
 
     private void initView() {
@@ -335,25 +334,28 @@ public class EditImageActivity extends BaseActivity {
             //迭代法去保存图片
             modes = SaveMode.EditMode.values();
             modeIndex = 0;
-            applyEdit();
+            applyEdit(v);
         }
 
 
         /**
          * 迭代方式一层一层保存图片
          */
-        private void applyEdit() {
+        private void applyEdit(final View v) {
+            final boolean shouldBack = v != null;
             if (modes[modeIndex] == SaveMode.EditMode.NONE || modes[modeIndex] == SaveMode.EditMode.CROP) {
                 modeIndex++;
                 if (modeIndex < modes.length) {
-                    applyEdit();
+                    applyEdit(v);
                 } else {
                     if (isSaveImageToLocal) {
                         if (mOpTimes == 0) {//并未修改图片
                             onSaveTaskDone();
                         } else {
-                            doSaveImage();
+                            doSaveImage(shouldBack);
                         }
+                    }else{
+                        doSaveImage(shouldBack);
                     }
                     if (inte != null) {
                         inte.completed();
@@ -366,14 +368,16 @@ public class EditImageActivity extends BaseActivity {
                 @Override
                 public void completed() {
                     if (modeIndex < modes.length) {
-                        applyEdit();
+                        applyEdit(v);
                     } else {
                         if (isSaveImageToLocal) {
                             if (mOpTimes == 0) {//并未修改图片
                                 onSaveTaskDone();
                             } else {
-                                doSaveImage();
+                                doSaveImage(shouldBack);
                             }
+                        }else{
+                            doSaveImage(shouldBack);
                         }
                         if (inte != null) {
                             inte.completed();
@@ -384,7 +388,7 @@ public class EditImageActivity extends BaseActivity {
         }
     }
 
-    protected void doSaveImage() {
+    protected void doSaveImage(boolean shouldBack) {
         if (mOpTimes <= 0)
             return;
 
@@ -392,7 +396,7 @@ public class EditImageActivity extends BaseActivity {
             mSaveImageTask.cancel(true);
         }
 
-        mSaveImageTask = new SaveImageTask();
+        mSaveImageTask = new SaveImageTask(shouldBack);
         mSaveImageTask.execute(mainBitmap);
     }
 
@@ -455,6 +459,10 @@ public class EditImageActivity extends BaseActivity {
      */
     private final class SaveImageTask extends AsyncTask<Bitmap, Void, Boolean> {
         private Dialog dialog;
+        private boolean shouldBack;
+        public SaveImageTask(boolean shouldBack){
+            this.shouldBack = shouldBack;
+        }
 
         @Override
         protected Boolean doInBackground(Bitmap... params) {
@@ -480,7 +488,7 @@ public class EditImageActivity extends BaseActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             dialog = EditImageActivity.getLoadingDialog(mContext, R.string.saving_image, false);
-            dialog.show();
+//            dialog.show();
         }
 
         @Override
@@ -490,7 +498,9 @@ public class EditImageActivity extends BaseActivity {
 
             if (result) {
                 resetOpTimes();
-                onSaveTaskDone();
+                if (shouldBack) {
+                    onSaveTaskDone();
+                }
             } else {
                 Toast.makeText(mContext, R.string.save_error, Toast.LENGTH_SHORT).show();
             }
@@ -517,6 +527,10 @@ public class EditImageActivity extends BaseActivity {
             if (data != null && resultCode == Activity.RESULT_OK) {
                 final Uri resultUri = UCrop.getOutput(data);
                 loadImage(resultUri.getSchemeSpecificPart());
+            }
+            File file = new File(saveFilePath);
+            if (file.exists()) {
+                file.delete();
             }
             SaveMode.getInstant().setMode(SaveMode.EditMode.NONE);
         }

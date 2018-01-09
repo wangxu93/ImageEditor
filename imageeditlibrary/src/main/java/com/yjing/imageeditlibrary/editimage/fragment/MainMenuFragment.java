@@ -1,5 +1,6 @@
 package com.yjing.imageeditlibrary.editimage.fragment;
 
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,6 +16,7 @@ import com.yjing.imageeditlibrary.editimage.AddTextActivity;
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
 import com.yjing.imageeditlibrary.editimage.contorl.SaveMode;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
+import com.yjing.imageeditlibrary.editimage.inter.SaveCompletedInte;
 
 import java.io.File;
 
@@ -31,7 +33,6 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
     private View mTextBtn;//文字型贴图添加
     private View mPaintBtn;//编辑按钮
     private View mosaicBtn;//马赛克按钮
-    private String mImageUrl;
 
     public static MainMenuFragment newInstance(EditImageActivity activity) {
         MainMenuFragment fragment = new MainMenuFragment();
@@ -77,9 +78,6 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         SaveMode.EditMode preMode = SaveMode.getInstant().getMode();//点击之前处于的编辑模式
         SaveMode.EditMode clickMode = getEditModeForView(v);
-        if (TextUtils.isEmpty(mImageUrl)) {
-            return;
-        }
         //1.确定当前要处于模式
         if (preMode == clickMode) {//如果点击前和点击后处于一种模式，则隐藏当前编辑模式（设置当前模式为NONE）
             clickMode = SaveMode.EditMode.NONE;
@@ -112,15 +110,13 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
                 activity.editFactory.hideFragment(activity.editFactory.getFragment(clickMode));
                 return;
             }else if(clickMode == SaveMode.EditMode.CROP){
-                UCrop.Options options = new UCrop.Options();
-                options.setFreeStyleCropEnabled(true);
-                options.setHideBottomControls(true);
-                File file = new File(mImageUrl);
-                File file1 = new File(Environment.getExternalStorageDirectory().getAbsoluteFile().toString() + "/testCrop/");
-                UCrop.of(Uri.fromFile(file),Uri.fromFile(file1))
-                        .withAspectRatio(16, 9)
-                        .withOptions(options)
-                        .start(activity);
+                EditImageActivity.SaveBtnClick saveBtnClick = activity.new SaveBtnClick(false, new SaveCompletedInte() {
+                    @Override
+                    public void completed() {
+                        gotoCropImage();
+                    }
+                });
+                saveBtnClick.onClick(null);
                 activity.editFactory.hideFragment(activity.editFactory.getFragment(clickMode));
                 return;
             }
@@ -133,8 +129,15 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void setImageURl(String url){
-        mImageUrl = url;
+    private void gotoCropImage(){
+        UCrop.Options options = new UCrop.Options();
+        options.setFreeStyleCropEnabled(true);
+//                options.setHideBottomControls(true);
+        File file = new File(activity.saveFilePath);
+        File file1 = new File(Environment.getExternalStorageDirectory().getAbsoluteFile().toString() + "/testCrop/");
+        UCrop.of(Uri.fromFile(file),Uri.fromFile(file1))
+                .withOptions(options)
+                .start(activity);
     }
 
     private View getButtonForMode(SaveMode.EditMode mode) {
