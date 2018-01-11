@@ -6,5 +6,6 @@ package com.yjing.imageeditlibrary.editimage.inter;
 
 public interface OnViewTouthListener  {
     void onTouchDown();
+    void onTouchMove();
     void onTouchUp();
 }

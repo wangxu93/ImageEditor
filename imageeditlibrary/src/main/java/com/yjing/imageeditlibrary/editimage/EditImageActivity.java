@@ -88,6 +88,7 @@ public class EditImageActivity extends BaseActivity {
     private View titleBar;
     private View rlBottomView;
     private View fl_edit_above_mainmenu;
+    private int bottomViewVisibity = View.GONE;
 
     /**
      * @param context
@@ -194,6 +195,11 @@ public class EditImageActivity extends BaseActivity {
     private OnViewTouthListener onViewTouthListener = new OnViewTouthListener() {
         @Override
         public void onTouchDown() {
+            bottomViewVisibity = fl_edit_above_mainmenu.getVisibility();
+        }
+
+        @Override
+        public void onTouchMove() {
             setMainPageCoverViewStatus(View.GONE);
         }
 
@@ -206,14 +212,10 @@ public class EditImageActivity extends BaseActivity {
     private void setMainPageCoverViewStatus(int status){
         titleBar.setVisibility(status);
         rlBottomView.setVisibility(status);
-        if (status == View.VISIBLE) {
-            if (fl_edit_above_mainmenu.getVisibility() == View.GONE) {
-                fl_edit_above_mainmenu.setVisibility(View.VISIBLE);
-            }
+        if (status == View.GONE) {
+            fl_edit_above_mainmenu.setVisibility(View.GONE);
         }else{
-            if (fl_edit_above_mainmenu.getVisibility() == View.VISIBLE) {
-                fl_edit_above_mainmenu.setVisibility(View.GONE);
-            }
+            fl_edit_above_mainmenu.setVisibility(bottomViewVisibity);
         }
     }
 

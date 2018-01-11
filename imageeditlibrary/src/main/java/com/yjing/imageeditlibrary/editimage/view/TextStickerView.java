@@ -282,6 +282,9 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
                     last_y = mRotateDstRect.centerY();
                     ret = true;
                 } else if (mHelpBoxRect.contains(x, y)) {// 移动模式
+                    if (onViewTouthListener != null) {
+                        onViewTouthListener.onTouchDown();
+                    }
                     isShowHelpBox = true;
                     mCurrentMode = MOVE_MODE;
                     last_x = x;
@@ -302,7 +305,7 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
                 ret = true;
                 if (mCurrentMode == MOVE_MODE) {// 移动贴图
                     if (onViewTouthListener != null) {
-                        onViewTouthListener.onTouchDown();
+                        onViewTouthListener.onTouchMove();
                     }
                     mCurrentMode = MOVE_MODE;
                     float dx = x - last_x;

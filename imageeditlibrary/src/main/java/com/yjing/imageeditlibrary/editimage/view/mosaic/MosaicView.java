@@ -216,6 +216,9 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                if (onViewTouthListener != null) {
+                    onViewTouthListener.onTouchDown();
+                }
                 touchPath = new MosaicPath();
                 touchPath.drawPath = new Path();
                 touchPath.drawPath.moveTo(x, y);
@@ -226,7 +229,7 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (onViewTouthListener != null) {
-                    onViewTouthListener.onTouchDown();
+                    onViewTouthListener.onTouchMove();
                 }
                 if (touchPath == null) {
                     touchPath = new MosaicPath();
