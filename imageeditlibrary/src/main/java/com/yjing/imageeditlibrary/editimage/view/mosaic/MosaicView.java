@@ -203,6 +203,9 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
         }
 
         if (x < mImageRect.left || x > mImageRect.right || y < mImageRect.top || y > mImageRect.bottom) {
+            if (onViewTouthListener != null) {
+                onViewTouthListener.onTouchUp();
+            }
             return true;
         }
 
