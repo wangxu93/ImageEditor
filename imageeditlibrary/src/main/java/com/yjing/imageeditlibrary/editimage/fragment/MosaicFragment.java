@@ -153,12 +153,11 @@ public class MosaicFragment extends BaseFragment implements View.OnClickListener
      * 设置马赛克的样式和粗细
      */
     private void initSetting() {
-
+        mMosaicUtils.checkZoomNum(activity.mainBitmap.getWidth(),activity.mainBitmap.getHeight());
         mMosaicView.setMosaicBackgroundResource(activity.mainBitmap);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mMosaicUtils.checkZoomNum(activity.mainBitmap.getWidth(),activity.mainBitmap.getHeight());
                 Bitmap bit = mMosaicUtils.getMosaic(activity.mainBitmap);
                 Bitmap blur = mMosaicUtils.getBlur(activity.mainBitmap);
 
@@ -166,7 +165,7 @@ public class MosaicFragment extends BaseFragment implements View.OnClickListener
                 mosaicResMap.put(MosaicUtil.Effect.MOSAIC, bit);
                 mosaicResMap.put(MosaicUtil.Effect.BLUR, blur);
                 mMosaicView.setMosaicResource(mosaicResMap);
-                mMosaicView.setMosaicBrushWidth(5 * mMosaicUtils.getZoomNum());
+                mMosaicView.setMosaicBrushWidth(20);
                 final MosaicUtil.Effect mosaicEffect = mMosaicView.getMosaicEffect();
                 //默认选中基础模式
                 mMosaicView.post(new Runnable() {

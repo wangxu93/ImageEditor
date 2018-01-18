@@ -188,7 +188,7 @@ public class EditImageActivity extends BaseActivity {
         Matrix ma = view.getOuterMatrix(null);
         RectF imageBound = view.getImageBound(null);
         mPaintView.setMainLevelMatrix(ma,imageBound);
-        mMosaicView.setMainLevelMatrix(ma);
+        mMosaicView.setMainLevelMatrix(ma,imageBound);
         mTextStickerView.setMainLevelMatrix(ma,imageBound);
     }
 

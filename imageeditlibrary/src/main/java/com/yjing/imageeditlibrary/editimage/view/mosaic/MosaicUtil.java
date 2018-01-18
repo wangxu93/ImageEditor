@@ -24,8 +24,8 @@ import android.graphics.Rect;
 
 public class MosaicUtil {
 
-    private static final int MAX_SIZE = 1 * 1024 * 1024; //每张图片最大允许加载1M的
-    private  int zoomNum = 4;
+    private static final double MAX_SIZE = 1 * 1024 * 1024.0; //每张图片最大允许加载1M的
+    private  int zoomNum = -1;
     public static enum Effect {
         MOSAIC, BLUR, FLOWER,
     }
@@ -43,11 +43,14 @@ public class MosaicUtil {
     public  void  checkZoomNum(int width,int height){
         int totalMemory = width * height * 4;
         if (totalMemory > MAX_SIZE) {
-            zoomNum = (int) Math.ceil(totalMemory / MAX_SIZE);
+            zoomNum = (int) Math.ceil(Math.sqrt(totalMemory / MAX_SIZE));
         }
     }
 
-    public int getZoomNum(){
+    public int getZoomNum(int width,int height){
+        if (zoomNum == -1) {
+            checkZoomNum(width,height);
+        }
         return zoomNum;
     }
     /**

@@ -12,6 +12,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -74,6 +75,7 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
     private float[] floats = new float[]{1,0,0,0,1,0,0,0,1};
 
     private OnViewTouthListener onViewTouthListener;
+    private RectF mainRectf;
 
     public MosaicView(Context context) {
         this(context,null);
@@ -125,8 +127,9 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
             Log.e("jarlen", "setMosaicBackgroundResource : bitmap == null");
             return;
         }
-        mImageWidth = bitmap.getWidth() / MosaicUtil.newInstance().getZoomNum();
-        mImageHeight = bitmap.getHeight() / MosaicUtil.newInstance().getZoomNum();
+        int zoomNum = MosaicUtil.newInstance().getZoomNum(bitmap.getWidth(),bitmap.getHeight());
+        mImageWidth = bitmap.getWidth() / zoomNum;
+        mImageHeight = bitmap.getHeight() / zoomNum;
 
         requestLayout();
         invalidate();
@@ -141,28 +144,6 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
         this.mosaicResMap = mosaicResMap;
     }
 
-    private Bitmap copyBitmap(Bitmap bit) {
-        Bitmap bitmap = Bitmap.createBitmap(bit.getWidth(), bit.getHeight(),
-                Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        canvas.drawBitmap(bit, 0, 0, null);
-        canvas.save();
-        return bitmap;
-    }
-
-    /**
-     * 清除绘画数据
-     */
-    public void clear() {
-        touchPaths.clear();
-
-        if (bmMosaicLayer != null) {
-            bmMosaicLayer.recycle();
-            bmMosaicLayer = null;
-        }
-
-        invalidate();
-    }
 
     /**
      * 重置绘画版
@@ -189,7 +170,7 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
     public boolean dispatchTouchEvent(MotionEvent event) {
 
         //外部通过isOperation变量可以控制是否操作本图层
-        if (!isOperation) {
+        if (!isOperation || mosaicResMap == null) {
             return isOperation;
         }
         super.dispatchTouchEvent(event);
@@ -202,7 +183,7 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
             return true;
         }
 
-        if (x < mImageRect.left || x > mImageRect.right || y < mImageRect.top || y > mImageRect.bottom) {
+        if (!mainRectf.contains(x,y)) {
             if (onViewTouthListener != null) {
                 onViewTouthListener.onTouchUp();
             }
@@ -260,7 +241,8 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
         return true;
     }
 
-    public void setMainLevelMatrix(Matrix matrix){
+    public void setMainLevelMatrix(Matrix matrix, RectF rectF){
+        mainRectf = rectF;
         mMatrix = matrix;
         matrix.getValues(floats);
         postInvalidate();
@@ -278,17 +260,14 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
             bmMosaicLayer.recycle();
             bmMosaicLayer = null;
         }
-
         //创建马赛克图层
         bmMosaicLayer = Bitmap.createBitmap(mImageWidth, mImageHeight,
-                Bitmap.Config.ARGB_8888);
+                Bitmap.Config.ARGB_4444);
 
         //向画布上画马赛克，正常画路径
         for (MosaicPath path : touchPaths) {
             drawPath(path);
         }
-
-
     }
 
     private void drawPath(MosaicPath path) {
