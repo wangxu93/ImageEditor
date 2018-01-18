@@ -125,8 +125,8 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
             Log.e("jarlen", "setMosaicBackgroundResource : bitmap == null");
             return;
         }
-        mImageWidth = bitmap.getWidth();
-        mImageHeight = bitmap.getHeight();
+        mImageWidth = bitmap.getWidth() / MosaicUtil.newInstance().getZoomNum();
+        mImageHeight = bitmap.getHeight() / MosaicUtil.newInstance().getZoomNum();
 
         requestLayout();
         invalidate();
@@ -295,7 +295,7 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
 
         //临时的bitmap
         Bitmap bmTouchLayer = Bitmap.createBitmap(mImageWidth, mImageHeight,
-                Bitmap.Config.ARGB_8888);
+                Bitmap.Config.ARGB_4444);
 
         //创建paint并设置
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -311,28 +311,16 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
         Canvas canvas = new Canvas(bmTouchLayer);
 
         //向画布上画马赛克，正常画路径
-//        for (MosaicPath path : touchPaths) {
+
         Path pathTemp = path.drawPath;
         int drawWidth = path.paintWidth;
         paint.setStrokeWidth(drawWidth);
         canvas.drawPath(pathTemp, paint);
-//        }
 
-        //向画布画橡皮擦路径
-        //
-//        paint.setColor(Color.TRANSPARENT);//
-//        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));//没有懂  尝试过clear、srcin都可以使用 如果不设置该属性，橡皮擦功能不能使用
-
-//        for (MosaicPath path : erasePaths) {
-//            Path pathTemp = m.drawPath;
-//            int drawWidth = path.paintWidth;
-//            paint.setStrokeWidth(drawWidth);
-//            canvas.drawPath(pathTemp, paint);
-//        }
 
         //创建马赛克图层
         Bitmap layer = Bitmap.createBitmap(mImageWidth, mImageHeight,
-                Bitmap.Config.ARGB_8888);
+                Bitmap.Config.ARGB_4444);
         canvas.setBitmap(layer);
         canvas.drawARGB(0, 0, 0, 0);
 

@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ import com.yjing.imageeditlibrary.utils.FileUtils;
 
 import java.util.HashMap;
 
+import static com.yjing.imageeditlibrary.editimage.view.mosaic.MosaicView.TAG;
+
 
 public class MosaicFragment extends BaseFragment implements View.OnClickListener, ImageEditInte {
     private MosaicView mMosaicView;
@@ -31,6 +34,7 @@ public class MosaicFragment extends BaseFragment implements View.OnClickListener
     private View mRevokeView;
     private View preMosaicButton;
     private HashMap<MosaicUtil.Effect, Bitmap> mosaicResMap;
+    private MosaicUtil mMosaicUtils;
 
     public MosaicFragment() {
     }
@@ -45,6 +49,7 @@ public class MosaicFragment extends BaseFragment implements View.OnClickListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mMosaicUtils = MosaicUtil.newInstance();
     }
 
     @Override
@@ -77,7 +82,7 @@ public class MosaicFragment extends BaseFragment implements View.OnClickListener
         if (i == R.id.action_base) {
 
             if (hasMosaicRes(MosaicUtil.Effect.MOSAIC)) {
-                Bitmap bit = MosaicUtil.getMosaic(activity.mainBitmap);
+                Bitmap bit = mMosaicUtils.getMosaic(activity.mainBitmap);
                 mosaicResMap.put(MosaicUtil.Effect.MOSAIC, bit);
                 mMosaicView.setMosaicResource(mosaicResMap);
             }
@@ -86,7 +91,7 @@ public class MosaicFragment extends BaseFragment implements View.OnClickListener
         } else if (i == R.id.action_ground_glass) {
 
             if (hasMosaicRes(MosaicUtil.Effect.BLUR)) {
-                Bitmap blur = MosaicUtil.getBlur(activity.mainBitmap);
+                Bitmap blur = mMosaicUtils.getBlur(activity.mainBitmap);
                 mosaicResMap.put(MosaicUtil.Effect.BLUR, blur);
                 mMosaicView.setMosaicResource(mosaicResMap);
             }
@@ -150,20 +155,28 @@ public class MosaicFragment extends BaseFragment implements View.OnClickListener
     private void initSetting() {
 
         mMosaicView.setMosaicBackgroundResource(activity.mainBitmap);
-        Bitmap bit = MosaicUtil.getMosaic(activity.mainBitmap);
-        Bitmap blur = MosaicUtil.getBlur(activity.mainBitmap);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mMosaicUtils.checkZoomNum(activity.mainBitmap.getWidth(),activity.mainBitmap.getHeight());
+                Bitmap bit = mMosaicUtils.getMosaic(activity.mainBitmap);
+                Bitmap blur = mMosaicUtils.getBlur(activity.mainBitmap);
 
-        mosaicResMap = new HashMap<>();
-        mosaicResMap.put(MosaicUtil.Effect.MOSAIC, bit);
-        mosaicResMap.put(MosaicUtil.Effect.BLUR, blur);
-        mMosaicView.setMosaicResource(mosaicResMap);
-
-        mMosaicView.setMosaicBrushWidth(30);
-
-        MosaicUtil.Effect mosaicEffect = mMosaicView.getMosaicEffect();
-        //默认选中基础模式
-        changeToolsSelector(mosaicEffect);
-
+                mosaicResMap = new HashMap<>();
+                mosaicResMap.put(MosaicUtil.Effect.MOSAIC, bit);
+                mosaicResMap.put(MosaicUtil.Effect.BLUR, blur);
+                mMosaicView.setMosaicResource(mosaicResMap);
+                mMosaicView.setMosaicBrushWidth(5 * mMosaicUtils.getZoomNum());
+                final MosaicUtil.Effect mosaicEffect = mMosaicView.getMosaicEffect();
+                //默认选中基础模式
+                mMosaicView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        changeToolsSelector(mosaicEffect);
+                    }
+                });
+            }
+        }).start();
     }
 
     /**
@@ -213,15 +226,7 @@ public class MosaicFragment extends BaseFragment implements View.OnClickListener
         @Override
         public void handleImage(Canvas canvas, Matrix m) {
 
-//            float[] f = new float[9];
-//            m.getValues(f);
-//            int dx = (int) f[Matrix.MTRANS_X];
-//            int dy = (int) f[Matrix.MTRANS_Y];
-//            float scale_x = f[Matrix.MSCALE_X];
-//            float scale_y = f[Matrix.MSCALE_Y];
             canvas.save();
-//            canvas.translate(dx, dy);
-//            canvas.scale(scale_x, scale_y);
 
             if (mMosaicView.getMosaicBit() != null) {
                 canvas.drawBitmap(mMosaicView.getMosaicBit(), 0, 0, null);
