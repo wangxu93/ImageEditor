@@ -5,13 +5,11 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.CornerPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -53,7 +51,7 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
      */
     private int mBrushWidth;
 
-    private Rect mImageRect;
+    private RectF mImageRect;
 
     private int mPadding;
 
@@ -76,6 +74,7 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
 
     private OnViewTouthListener onViewTouthListener;
     private RectF mainRectf;
+    private Paint mMosicPaint;
 
     public MosaicView(Context context) {
         this(context,null);
@@ -85,7 +84,7 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
         this(context, attrs,0);
     }
 
-    public MosaicView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MosaicView(final Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
         initDrawView();
@@ -103,9 +102,31 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
 
         mPadding = dp2px(INNER_PADDING);
         mBrushWidth = dp2px(PATH_WIDTH);
-
-        mImageRect = new Rect();
+        mImageRect = new RectF();
+        initPaint();
         setWillNotDraw(false);
+    }
+
+    private void initMosicLayer() {
+        if (bmMosaicLayer != null) {
+            bmMosaicLayer.recycle();
+            bmMosaicLayer = null;
+        }
+        //创建马赛克图层
+        bmMosaicLayer = Bitmap.createBitmap(mImageWidth, mImageHeight,
+                Bitmap.Config.ARGB_4444);
+    }
+
+    private void initPaint() {
+        //创建paint并设置
+        mMosicPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mMosicPaint.setStyle(Paint.Style.STROKE);
+        mMosicPaint.setAntiAlias(true);
+        mMosicPaint.setStrokeJoin(Paint.Join.ROUND);
+        mMosicPaint.setStrokeCap(Paint.Cap.ROUND);
+//        mMosicPaint.setPathEffect(new CornerPathEffect(10));//将路径的转角变得圆滑
+        mMosicPaint.setStrokeWidth(mBrushWidth);
+        mMosicPaint.setColor(Color.BLACK);
     }
 
     /**
@@ -128,11 +149,12 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
             return;
         }
         int zoomNum = MosaicUtil.newInstance().getZoomNum(bitmap.getWidth(),bitmap.getHeight());
-        mImageWidth = bitmap.getWidth() / zoomNum;
-        mImageHeight = bitmap.getHeight() / zoomNum;
-
+//        mImageWidth = bitmap.getWidth() / zoomNum;
+//        mImageHeight = bitmap.getHeight() / zoomNum;
+        mImageWidth = bitmap.getWidth();
+        mImageHeight = bitmap.getHeight() ;
         requestLayout();
-        invalidate();
+        updatePathMosaic();
     }
 
     /**
@@ -183,7 +205,7 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
             return true;
         }
 
-        if (mainRectf != null && !mainRectf.contains(x,y)) {
+        if (!mainRectf.contains(x,y)) {
             if (onViewTouthListener != null) {
                 onViewTouthListener.onTouchUp();
             }
@@ -208,8 +230,6 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
                 touchPath.drawPath.moveTo(x, y);
                 touchPath.effect = mosaicEffect;
                 touchPath.paintWidth = mBrushWidth;
-
-                touchPaths.add(touchPath);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (onViewTouthListener != null) {
@@ -221,17 +241,17 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
                     touchPath.drawPath.moveTo(x, y);
                     touchPath.effect = mosaicEffect;
                     touchPath.paintWidth = mBrushWidth;
-
-                    touchPaths.add(touchPath);
                 }else {
                     touchPath.drawPath.lineTo(x, y);
                 }
-                updatePathMosaic();
-                invalidate();
+                drawMasicPath(touchPath);
                 break;
             case MotionEvent.ACTION_UP:
                 if (onViewTouthListener != null) {
                     onViewTouthListener.onTouchUp();
+                }
+                if (touchPaths != null) {
+                    touchPaths.add(touchPath);
                 }
             case MotionEvent.ACTION_CANCEL:
 
@@ -255,70 +275,30 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
         if (mImageWidth <= 0 || mImageHeight <= 0) {
             return;
         }
-
-        if (bmMosaicLayer != null) {
-            bmMosaicLayer.recycle();
-            bmMosaicLayer = null;
-        }
-        //创建马赛克图层
-        bmMosaicLayer = Bitmap.createBitmap(mImageWidth, mImageHeight,
-                Bitmap.Config.ARGB_4444);
-
+        initMosicLayer();
         //向画布上画马赛克，正常画路径
         for (MosaicPath path : touchPaths) {
-            drawPath(path);
+            drawMasicPath(path);
+//            drawPath(path);
         }
+        postInvalidate();
     }
 
-    private void drawPath(MosaicPath path) {
-
-        //临时的bitmap
-        Bitmap bmTouchLayer = Bitmap.createBitmap(mImageWidth, mImageHeight,
-                Bitmap.Config.ARGB_4444);
-
-        //创建paint并设置
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setAntiAlias(true);
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setPathEffect(new CornerPathEffect(10));//将路径的转角变得圆滑
-        paint.setStrokeWidth(mBrushWidth);
-        paint.setColor(Color.BLUE);
-
-        //临时的canvas
-        Canvas canvas = new Canvas(bmTouchLayer);
-
-        //向画布上画马赛克，正常画路径
-
-        Path pathTemp = path.drawPath;
-        int drawWidth = path.paintWidth;
-        paint.setStrokeWidth(drawWidth);
-        canvas.drawPath(pathTemp, paint);
-
-
-        //创建马赛克图层
-        Bitmap layer = Bitmap.createBitmap(mImageWidth, mImageHeight,
-                Bitmap.Config.ARGB_4444);
-        canvas.setBitmap(layer);
-        canvas.drawARGB(0, 0, 0, 0);
-
-        canvas.drawBitmap(mosaicResMap.get(path.effect), 0, 0, null);//马赛克样式的图层
-
-        paint.reset();
-        paint.setAntiAlias(true);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));//显示手指触摸的地方
-        canvas.drawBitmap(bmTouchLayer, 0, 0, paint);//手指操作的图层
-        paint.setXfermode(null);
-        canvas.save();
-
-
+    private void drawMasicPath(MosaicPath path) {
+        Canvas canvas = new Canvas();
         canvas.setBitmap(bmMosaicLayer);
-        canvas.drawBitmap(layer, 0, 0, null);
-
-        layer.recycle();
-        bmTouchLayer.recycle();
+        canvas.translate(0,0);
+        int layerCount = canvas.saveLayer(mainRectf, null, Canvas.ALL_SAVE_FLAG);
+            Path drawPath = path.drawPath;
+            int paintWidth = path.paintWidth;
+            mMosicPaint.setStrokeWidth(paintWidth);
+            canvas.drawPath(drawPath,mMosicPaint);
+            mMosicPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+            canvas.drawBitmap(mosaicResMap.get(path.effect),0,0,mMosicPaint);
+            mMosicPaint.setXfermode(null);
+        canvas.restoreToCount(layerCount);
     }
+
 
     @Override
     public void onDraw(Canvas canvas) {
@@ -356,31 +336,8 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
         mImageRect.set(imageLeft, imageTop, imageRight, imageBottom);
     }
 
-    /**
-     * 返回马赛克最终结果
-     *
-     * @return 马赛克最终结果
-     */
-    public Bitmap getMosaicBitmap() {
-        if (bmMosaicLayer == null) {
-            return null;
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(mImageWidth, mImageHeight,
-                Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        canvas.drawBitmap(bmMosaicLayer, 0, 0, null);
-        canvas.save();
-        return bitmap;
-    }
-
-
     public Bitmap getMosaicBit() {
         return bmMosaicLayer;
-    }
-
-    public Rect getmImageRect(){
-        return mImageRect;
     }
 
     private int dp2px(int dip) {
@@ -399,24 +356,27 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
 
     @Override
     public Boolean getIsOperation() {
-        return null;
+        return isOperation;
     }
 
     public void undo() {
         if (touchPaths.size() > 0) {
             MosaicPath undoable = touchPaths.remove(touchPaths.size() - 1);
             Log.i("wangyanjing", "撤销了一个mPath" + undoable.hashCode() + "====" + touchPaths.size());
+            initMosicLayer();
             updatePathMosaic();
-            invalidate();
         }
     }
 
     public void setMosaicEffect(MosaicUtil.Effect mosaicEffect) {
         this.mosaicEffect = mosaicEffect;
-//        invalidate();
     }
 
     public MosaicUtil.Effect getMosaicEffect() {
         return mosaicEffect;
     }
-}//end class
+
+    public RectF getmImageRect() {
+        return mImageRect;
+    }
+}
