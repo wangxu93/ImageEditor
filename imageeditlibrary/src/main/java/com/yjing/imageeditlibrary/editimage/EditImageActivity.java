@@ -12,8 +12,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.text.LoginFilter;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
@@ -54,6 +56,7 @@ public class EditImageActivity extends BaseActivity {
     public static final String IMAGE_IS_EDIT = "image_is_edit";
 
     public static final int REQUESTCODE_ADDTEXT = 0xFF00;
+    private static final String TAG = "EditImageActivity";
 
     public String filePath;// 需要编辑图片路径
     public String saveFilePath;// 生成的新图片路径
@@ -264,9 +267,6 @@ public class EditImageActivity extends BaseActivity {
             }
             mainBitmap = result;
             mainImage.setImageBitmap(result);
-            getMainImageParams(mainImage);
-//            mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
-            // mainImage.setDisplayType(DisplayType.FIT_TO_SCREEN);
         }
     }
 

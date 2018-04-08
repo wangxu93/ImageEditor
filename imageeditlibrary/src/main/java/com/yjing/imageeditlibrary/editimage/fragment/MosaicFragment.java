@@ -226,9 +226,9 @@ public class MosaicFragment extends BaseFragment implements View.OnClickListener
         public void handleImage(Canvas canvas, Matrix m) {
 
             canvas.save();
-
-            if (mMosaicView.getMosaicBit() != null) {
-                canvas.drawBitmap(mMosaicView.getMosaicBit(), 0, 0, null);
+            canvas.setMatrix(m);
+            if (mMosaicView.getMosaicBit() != null && mMosaicView.getmImageRect() != null) {
+                canvas.drawBitmap(mMosaicView.getMosaicBit(), null, mMosaicView.getmImageRect(), null);
             }
             canvas.restore();
         }

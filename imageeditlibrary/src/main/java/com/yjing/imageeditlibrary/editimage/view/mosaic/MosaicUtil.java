@@ -44,6 +44,8 @@ public class MosaicUtil {
         int totalMemory = width * height * 4;
         if (totalMemory > MAX_SIZE) {
             zoomNum = (int) Math.ceil(Math.sqrt(totalMemory / MAX_SIZE));
+        }else{
+            zoomNum = 1;
         }
     }
 

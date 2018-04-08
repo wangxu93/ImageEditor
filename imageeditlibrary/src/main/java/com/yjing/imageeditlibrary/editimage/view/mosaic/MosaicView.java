@@ -183,7 +183,7 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
             return true;
         }
 
-        if (!mainRectf.contains(x,y)) {
+        if (mainRectf != null && !mainRectf.contains(x,y)) {
             if (onViewTouthListener != null) {
                 onViewTouthListener.onTouchUp();
             }
@@ -377,6 +377,10 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
 
     public Bitmap getMosaicBit() {
         return bmMosaicLayer;
+    }
+
+    public Rect getmImageRect(){
+        return mImageRect;
     }
 
     private int dp2px(int dip) {
