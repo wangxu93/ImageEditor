@@ -18,6 +18,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
@@ -92,6 +94,8 @@ public class EditImageActivity extends BaseActivity {
     private View rlBottomView;
     private View fl_edit_above_mainmenu;
     private int bottomViewVisibity = View.GONE;
+    private Animation mAnim_In;
+    private Animation mAnim_out;
 
     /**
      * @param context
@@ -118,6 +122,12 @@ public class EditImageActivity extends BaseActivity {
         setContentView(R.layout.activity_image_edit);
         initView();
         getData();
+        initAnim();
+    }
+
+    private void initAnim() {
+        mAnim_In = AnimationUtils.loadAnimation(this, R.anim.anim_in);
+        mAnim_out = AnimationUtils.loadAnimation(this, R.anim.anim_out);
     }
 
     private void getData() {
@@ -195,6 +205,7 @@ public class EditImageActivity extends BaseActivity {
         mTextStickerView.setMainLevelMatrix(ma,imageBound);
     }
 
+    private boolean visMode = false;
     private OnViewTouthListener onViewTouthListener = new OnViewTouthListener() {
         @Override
         public void onTouchDown() {
@@ -203,22 +214,39 @@ public class EditImageActivity extends BaseActivity {
 
         @Override
         public void onTouchMove() {
+            if (visMode) {
+                return;
+            }
+            visMode = true;
             setMainPageCoverViewStatus(View.GONE);
         }
 
         @Override
         public void onTouchUp() {
+            visMode = false;
             setMainPageCoverViewStatus(View.VISIBLE);
         }
     };
 
     private void setMainPageCoverViewStatus(int status){
         titleBar.setVisibility(status);
+        setViewAnim(titleBar,status);
         rlBottomView.setVisibility(status);
+        setViewAnim(rlBottomView,status);
         if (status == View.GONE) {
             fl_edit_above_mainmenu.setVisibility(View.GONE);
+            setViewAnim(fl_edit_above_mainmenu,View.GONE);
         }else{
             fl_edit_above_mainmenu.setVisibility(bottomViewVisibity);
+            setViewAnim(fl_edit_above_mainmenu,bottomViewVisibity);
+        }
+    }
+
+    private void setViewAnim(View v,int vis){
+        if (vis == View.GONE) {
+            v.startAnimation(mAnim_out);
+        }else{
+            v.startAnimation(mAnim_In);
         }
     }
 
