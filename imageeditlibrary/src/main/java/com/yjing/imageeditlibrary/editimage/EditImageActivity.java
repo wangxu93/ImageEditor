@@ -206,7 +206,10 @@ public class EditImageActivity extends BaseActivity {
     private OnViewTouthListener onViewTouthListener = new OnViewTouthListener() {
         @Override
         public void onTouchDown() {
-//            bottomViewVisibity = fl_edit_above_mainmenu.getVisibility();
+            if (paintVisMode) {
+                return;
+            }
+            bottomViewVisibity = fl_edit_above_mainmenu.getVisibility();
         }
 
         @Override
