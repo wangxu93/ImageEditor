@@ -11,11 +11,11 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
-import android.text.LoginFilter;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -27,22 +27,19 @@ import com.yalantis.ucrop.UCrop;
 import com.yjing.imageeditlibrary.BaseActivity;
 import com.yjing.imageeditlibrary.R;
 import com.yjing.imageeditlibrary.editimage.contorl.SaveMode;
-import com.yjing.imageeditlibrary.editimage.fragment.AddTextFragment;
 import com.yjing.imageeditlibrary.editimage.fragment.MainMenuFragment;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
 import com.yjing.imageeditlibrary.editimage.inter.OnViewTouthListener;
 import com.yjing.imageeditlibrary.editimage.inter.SaveCompletedInte;
-import com.yjing.imageeditlibrary.editimage.view.PinchImageView;
-import com.yjing.imageeditlibrary.utils.BitmapUtils;
-import com.yjing.imageeditlibrary.utils.FileUtils;
 import com.yjing.imageeditlibrary.editimage.view.CropImageView;
 import com.yjing.imageeditlibrary.editimage.view.CustomPaintView;
+import com.yjing.imageeditlibrary.editimage.view.PinchImageView;
 import com.yjing.imageeditlibrary.editimage.view.RotateImageView;
 import com.yjing.imageeditlibrary.editimage.view.StickerView;
 import com.yjing.imageeditlibrary.editimage.view.TextStickerView;
-import com.yjing.imageeditlibrary.editimage.view.imagezoom.ImageViewTouch;
-import com.yjing.imageeditlibrary.editimage.view.imagezoom.ImageViewTouchBase;
 import com.yjing.imageeditlibrary.editimage.view.mosaic.MosaicView;
+import com.yjing.imageeditlibrary.utils.BitmapUtils;
+import com.yjing.imageeditlibrary.utils.FileUtils;
 
 import java.io.File;
 
@@ -178,7 +175,7 @@ public class EditImageActivity extends BaseActivity {
 
 
         mMosaicView.setOnViewTouthListener(onViewTouthListener);
-        mPaintView.setOnViewTouthListener(onViewTouthListener);
+        mPaintView.setOnViewTouthListener(onPaintViewTouthListener);
         mTextStickerView.setOnViewTouthListener(onViewTouthListener);
 
         //放功能键的容器
@@ -194,22 +191,22 @@ public class EditImageActivity extends BaseActivity {
                 .show(mMainMenuFragment).commit();
     }
 
-    private void getMainImageParams(PinchImageView view){
+    private void getMainImageParams(PinchImageView view) {
         if (view == null) {
             return;
         }
         Matrix ma = view.getOuterMatrix(null);
         RectF imageBound = view.getImageBound(null);
-        mPaintView.setMainLevelMatrix(ma,imageBound);
-        mMosaicView.setMainLevelMatrix(ma,imageBound);
-        mTextStickerView.setMainLevelMatrix(ma,imageBound);
+        mPaintView.setMainLevelMatrix(ma, imageBound);
+        mMosaicView.setMainLevelMatrix(ma, imageBound);
+        mTextStickerView.setMainLevelMatrix(ma, imageBound);
     }
 
     private boolean visMode = false;
     private OnViewTouthListener onViewTouthListener = new OnViewTouthListener() {
         @Override
         public void onTouchDown() {
-            bottomViewVisibity = fl_edit_above_mainmenu.getVisibility();
+//            bottomViewVisibity = fl_edit_above_mainmenu.getVisibility();
         }
 
         @Override
@@ -228,24 +225,69 @@ public class EditImageActivity extends BaseActivity {
         }
     };
 
-    private void setMainPageCoverViewStatus(int status){
+    private boolean paintVisMode = false; //将一次操作时间延长，产品要求如果快速画的时候不能老是显示隐藏titlebar
+    private boolean moveDeleteMode = false; //有时候不能remove掉msg，就要使用状态过滤
+    private OnViewTouthListener onPaintViewTouthListener = new OnViewTouthListener() {
+        @Override
+        public void onTouchDown() {
+            if (paintVisMode) {
+                return;
+            }
+            bottomViewVisibity = fl_edit_above_mainmenu.getVisibility();
+        }
+
+        @Override
+        public void onTouchMove() {
+            moveDeleteMode = true;
+            if (paintVisMode) {
+                return;
+            }
+            paintVisMode = true;
+            setMainPageCoverViewStatus(View.GONE);
+        }
+
+        @Override
+        public void onTouchUp() {
+            moveDeleteMode = false;   //每次抬起设置false
+            sendShowDelayedMessage();
+        }
+    };
+
+    private void sendShowDelayedMessage() {
+        mOptHandler.removeMessages(View.VISIBLE);
+        mOptHandler.sendEmptyMessageDelayed(View.VISIBLE, 600);
+    }
+
+
+    private Handler mOptHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (moveDeleteMode) {   //检查当前是否为抬起，有些情况remove不掉msg，所以要加一层判断
+                return;
+            }
+            paintVisMode = false;
+            setMainPageCoverViewStatus(View.VISIBLE);
+        }
+    };
+
+    private void setMainPageCoverViewStatus(int status) {
         titleBar.setVisibility(status);
-        setViewAnim(titleBar,status);
+        setViewAnim(titleBar, status);
         rlBottomView.setVisibility(status);
-        setViewAnim(rlBottomView,status);
+        setViewAnim(rlBottomView, status);
         if (status == View.GONE) {
             fl_edit_above_mainmenu.setVisibility(View.GONE);
-            setViewAnim(fl_edit_above_mainmenu,View.GONE);
-        }else{
+            setViewAnim(fl_edit_above_mainmenu, View.GONE);
+        } else {
             fl_edit_above_mainmenu.setVisibility(bottomViewVisibity);
-            setViewAnim(fl_edit_above_mainmenu,bottomViewVisibity);
+            setViewAnim(fl_edit_above_mainmenu, bottomViewVisibity);
         }
     }
 
-    private void setViewAnim(View v,int vis){
+    private void setViewAnim(View v, int vis) {
         if (vis == View.GONE) {
             v.startAnimation(mAnim_out);
-        }else{
+        } else {
             v.startAnimation(mAnim_In);
         }
     }
@@ -384,7 +426,7 @@ public class EditImageActivity extends BaseActivity {
                         } else {
                             doSaveImage(shouldBack);
                         }
-                    }else{
+                    } else {
                         doSaveImage(shouldBack);
                     }
                     if (inte != null) {
@@ -406,7 +448,7 @@ public class EditImageActivity extends BaseActivity {
                             } else {
                                 doSaveImage(shouldBack);
                             }
-                        }else{
+                        } else {
                             doSaveImage(shouldBack);
                         }
                         if (inte != null) {
@@ -490,7 +532,8 @@ public class EditImageActivity extends BaseActivity {
     private final class SaveImageTask extends AsyncTask<Bitmap, Void, Boolean> {
         private Dialog dialog;
         private boolean shouldBack;
-        public SaveImageTask(boolean shouldBack){
+
+        public SaveImageTask(boolean shouldBack) {
             this.shouldBack = shouldBack;
         }
 
