@@ -76,6 +76,13 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
         mosaicBtn.setOnClickListener(this);
     }
 
+    public void selectPaintMode(){
+        if (mPaintBtn == null) {
+            return;
+        }
+        onClick(mPaintBtn);
+    }
+
     @Override
     public void onClick(View v) {
         SaveMode.EditMode preMode = SaveMode.getInstant().getMode();//点击之前处于的编辑模式

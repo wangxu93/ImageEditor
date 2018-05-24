@@ -341,6 +341,7 @@ public class EditImageActivity extends BaseActivity {
             }
             mainBitmap = result;
             mainImage.setImageBitmap(result);
+            mMainMenuFragment.selectPaintMode();
         }
     }
 
