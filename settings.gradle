@@ -1,1 +1,1 @@
-include ':demo', ':imageeditlibrary'
+include ':demo',':libImageEdit'

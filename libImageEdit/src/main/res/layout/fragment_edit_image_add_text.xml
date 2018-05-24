@@ -1,0 +1,40 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/add_text_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent"
+    android:orientation="vertical">
+
+    <include layout="@layout/edit_image_header" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+            <EditText
+                android:id="@+id/text_input"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="18dp"
+                android:background="@null"
+                android:gravity="left|top"
+                android:hint="@string/input_hint"
+                android:lineSpacingExtra="4.6dp"
+                android:paddingLeft="8dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white" />
+    </ScrollView>
+    <View android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#757b7e"/>
+    <com.yjing.imageeditlibrary.editimage.view.MainColorSelectorView
+        android:id="@+id/colorSlider"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp" />
+
+</LinearLayout>

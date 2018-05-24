@@ -1,0 +1,39 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/bottom_tool_paint_height"
+    android:background="#99000000"
+    android:clickable="true">
+
+    <com.yjing.imageeditlibrary.editimage.view.MainColorSelectorView
+        android:id="@+id/colorSelectorView"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_tool_paint_height"
+        android:layout_toLeftOf="@+id/viewTag" />
+    <View
+        android:id="@+id/viewTag"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/paint_revoke"
+        android:layout_width="1px"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@color/white"
+        android:layout_height="35dp"/>
+
+    <ImageView
+        android:id="@+id/paint_revoke"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/edit_image_revoke_btn" />
+    <View
+        android:layout_below="@+id/colorSelectorView"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#757b7e"/>
+
+</RelativeLayout>

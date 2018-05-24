@@ -26,11 +26,11 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':imageeditlibrary')
+    compile project(':libImageEdit')
 }
 repositories {
     flatDir {
-        dirs 'libs','../imageeditlibrary/libs'
+        dirs 'libs'
     }
     maven {
         url 'https://maven.google.com/'
