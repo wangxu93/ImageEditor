@@ -16,6 +16,7 @@ import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -23,7 +24,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.yalantis.ucrop.UCrop;
+import com.theartofdev.edmodo.cropper.CropImage;
 import com.yjing.imageeditlibrary.BaseActivity;
 import com.yjing.imageeditlibrary.R;
 import com.yjing.imageeditlibrary.editimage.contorl.SaveMode;
@@ -427,14 +428,14 @@ public class EditImageActivity extends BaseActivity {
                         if (mOpTimes == 0) {//并未修改图片
                             onSaveTaskDone();
                         } else {
-                            doSaveImage(shouldBack);
+                            doSaveImage(shouldBack,inte);
                         }
                     } else {
-                        doSaveImage(shouldBack);
+                        doSaveImage(shouldBack,inte);
                     }
-                    if (inte != null) {
-                        inte.completed();
-                    }
+//                    if (inte != null) {
+//                        inte.completed();
+//                    }
                 }
                 return;
             }
@@ -449,21 +450,21 @@ public class EditImageActivity extends BaseActivity {
                             if (mOpTimes == 0) {//并未修改图片
                                 onSaveTaskDone();
                             } else {
-                                doSaveImage(shouldBack);
+                                doSaveImage(shouldBack,inte);
                             }
                         } else {
-                            doSaveImage(shouldBack);
+                            doSaveImage(shouldBack,inte);
                         }
-                        if (inte != null) {
-                            inte.completed();
-                        }
+//                        if (inte != null) {
+//                            inte.completed();
+//                        }
                     }
                 }
             });
         }
     }
 
-    protected void doSaveImage(boolean shouldBack) {
+    protected void doSaveImage(boolean shouldBack,SaveCompletedInte inte) {
         if (mOpTimes <= 0)
             return;
 
@@ -472,6 +473,7 @@ public class EditImageActivity extends BaseActivity {
         }
 
         mSaveImageTask = new SaveImageTask(shouldBack);
+        mSaveImageTask.setLintener(inte);
         mSaveImageTask.execute(mainBitmap);
     }
 
@@ -535,6 +537,7 @@ public class EditImageActivity extends BaseActivity {
     private final class SaveImageTask extends AsyncTask<Bitmap, Void, Boolean> {
         private Dialog dialog;
         private boolean shouldBack;
+        private SaveCompletedInte mListener;
 
         public SaveImageTask(boolean shouldBack) {
             this.shouldBack = shouldBack;
@@ -571,7 +574,10 @@ public class EditImageActivity extends BaseActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             dialog.dismiss();
-
+            Log.i(TAG, "onPostExecute: ");
+            if (mListener != null) {
+                mListener.completed();
+            }
             if (result) {
                 resetOpTimes();
                 if (shouldBack) {
@@ -580,6 +586,10 @@ public class EditImageActivity extends BaseActivity {
             } else {
                 Toast.makeText(mContext, R.string.save_error, Toast.LENGTH_SHORT).show();
             }
+        }
+
+        public void setLintener(SaveCompletedInte inte) {
+            mListener = inte;
         }
     }
 
@@ -599,10 +609,15 @@ public class EditImageActivity extends BaseActivity {
             }
 
             SaveMode.getInstant().setMode(SaveMode.EditMode.NONE);
-        } else if (requestCode == UCrop.REQUEST_CROP) {
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (data != null && resultCode == Activity.RESULT_OK) {
-                final Uri resultUri = UCrop.getOutput(data);
-                loadImage(resultUri.getSchemeSpecificPart());
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                if (result != null) {
+                    Uri uri = result.getUri();
+                    if (uri != null) {
+                        loadImage(uri.getSchemeSpecificPart());
+                    }
+                }
             }
             File file = new File(saveFilePath);
             if (file.exists()) {

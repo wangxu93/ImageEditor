@@ -11,10 +11,10 @@
             android:windowSoftInputMode="adjustResize|stateVisible"
             android:theme="@style/AppTheme.Transparent"
             />
-        <activity
-            android:name="com.yalantis.ucrop.UCropActivity"
+        <!--<activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>-->
     </application>
 
 </manifest>

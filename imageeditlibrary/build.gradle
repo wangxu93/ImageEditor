@@ -25,15 +25,20 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile "com.android.support:appcompat-v7:${supportLibVer}"
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'com.android.support:recyclerview-v7:24.1.1'
-    compile 'com.android.support:support-v4:24.2.1'
-    compile(name: 'ucrop-1.0', ext: 'aar')
+    compile "com.android.support:recyclerview-v7:${supportLibVer}"
+    compile "com.android.support:support-v4:${supportLibVer}"
+    implementation "com.android.support:exifinterface:$supportLibVer"
+    compile(name: 'image_croper', ext: 'aar')
 }
 
 repositories {
     flatDir {
         dirs 'libs'
+    }
+    maven {
+        url 'https://maven.google.com/'
+        name 'Google'
     }
 }

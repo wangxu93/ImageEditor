@@ -27,7 +27,7 @@ public class ExifUtils {
 
 	/**
 	 * Return the rotation of the passed image file
-	 * 
+	 *
 	 * @param filepath
 	 *            image absolute file path
 	 * @return image orientation
@@ -69,7 +69,7 @@ public class ExifUtils {
 
 	/**
 	 * Load the exif tags into the passed Bundle
-	 * 
+	 *
 	 * @param filepath
 	 * @param out
 	 * @return true if exif tags are loaded correctly
@@ -92,7 +92,7 @@ public class ExifUtils {
 	/**
 	 * Store the exif attributes in the passed image file using the TAGS stored
 	 * in the passed bundle
-	 * 
+	 *
 	 * @param filepath
 	 * @param bundle
 	 * @return true if success
@@ -122,7 +122,7 @@ public class ExifUtils {
 
 	/**
 	 * Return the string representation of the given orientation
-	 * 
+	 *
 	 * @param orientation
 	 * @return
 	 */
@@ -143,7 +143,7 @@ public class ExifUtils {
 
 	/**
 	 * Try to get the exif orientation of the passed image uri
-	 * 
+	 *
 	 * @param context
 	 * @param uri
 	 * @return

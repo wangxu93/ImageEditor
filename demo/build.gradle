@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion compileSdkVer
+    buildToolsVersion buildToolsVer
 
     lintOptions {
         checkReleaseBuilds false//不开启lint检查，建议抽空开启为true打包，然后修复各种不规范的地方；
@@ -11,8 +11,8 @@ android {
 
     defaultConfig {
         applicationId "com.yjing.imageeditor"
-        minSdkVersion 16
-        targetSdkVersion 23
+        minSdkVersion minsdkVersion
+        targetSdkVersion targetSdkVersion
         versionCode 101
         versionName "1.0.1"
     }
@@ -26,11 +26,14 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:23.1.1'
     compile project(':imageeditlibrary')
 }
 repositories {
     flatDir {
         dirs 'libs','../imageeditlibrary/libs'
+    }
+    maven {
+        url 'https://maven.google.com/'
+        name 'Google'
     }
 }

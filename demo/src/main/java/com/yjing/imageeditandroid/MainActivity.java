@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -18,6 +19,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
 import com.yjing.imageeditlibrary.utils.BitmapUtils;
 import com.yjing.imageeditlibrary.picchooser.SelectPictureActivity;
@@ -65,6 +68,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mTakenPhoto = findViewById(R.id.take_photo);
         mTakenPhoto.setOnClickListener(this);
+        findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotoTestActivity();
+            }
+        });
+    }
+
+    private void gotoTestActivity(){
+        CropImage.activity(null).setGuidelines(CropImageView.Guidelines.ON)
+                .setBorderLineColor(Color.WHITE)
+                .setBorderCornerColor(Color.WHITE)
+                .setBorderCornerOffset(-5)
+                .setBorderCornerThickness(10)
+                .setInitialCropWindowPaddingRatio(0)
+                .start(this);
     }
 
     @Override

@@ -1,16 +1,17 @@
 package com.yjing.imageeditlibrary.editimage.fragment;
 
-import android.graphics.RectF;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.yalantis.ucrop.UCrop;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 import com.yjing.imageeditlibrary.R;
 import com.yjing.imageeditlibrary.editimage.AddTextActivity;
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
@@ -106,10 +107,10 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             //2.重新设置mainImage。（因为在模式发生变化时，mainBitmap可能会被更新）
             activity.mainImage.setImageBitmap(activity.mainBitmap);
             if (clickMode == SaveMode.EditMode.TEXT) {  //添加文字独立处理
-                AddTextActivity.launch(activity,EditImageActivity.REQUESTCODE_ADDTEXT);
+                AddTextActivity.launch(activity, EditImageActivity.REQUESTCODE_ADDTEXT);
                 activity.editFactory.hideFragment(activity.editFactory.getFragment(clickMode));
                 return;
-            }else if(clickMode == SaveMode.EditMode.CROP){
+            } else if (clickMode == SaveMode.EditMode.CROP) {
                 EditImageActivity.SaveBtnClick saveBtnClick = activity.new SaveBtnClick(false, new SaveCompletedInte() {
                     @Override
                     public void completed() {
@@ -129,14 +130,17 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void gotoCropImage(){
-        UCrop.Options options = new UCrop.Options();
-        options.setFreeStyleCropEnabled(true);
-//                options.setHideBottomControls(true);
+    private void gotoCropImage() {
         File file = new File(activity.saveFilePath);
+        Log.i("gotoCropImage", "gotoCropImage: "+file.exists());
         File file1 = new File(Environment.getExternalStorageDirectory().getAbsoluteFile().toString() + "/testCrop/");
-        UCrop.of(Uri.fromFile(file),Uri.fromFile(file1))
-                .withOptions(options)
+        CropImage.activity(Uri.fromFile(file)).setGuidelines(CropImageView.Guidelines.ON)
+                .setBorderLineColor(Color.WHITE)
+                .setBorderCornerColor(Color.WHITE)
+                .setBorderCornerOffset(-5)
+                .setBorderCornerThickness(10)
+                .setInitialCropWindowPaddingRatio(0)
+                .setOutputUri(Uri.fromFile(file1))
                 .start(activity);
     }
 

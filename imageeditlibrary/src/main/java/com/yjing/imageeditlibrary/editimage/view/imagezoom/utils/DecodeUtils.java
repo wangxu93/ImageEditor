@@ -26,35 +26,7 @@ public class DecodeUtils {
 	 * @param maxH	the final image maximum height
 	 * @return	the loaded and resized bitmap, if success, or null if load was unsuccesful
 	 */
-	public static Bitmap decode( Context context, Uri uri, int maxW, int maxH ) {
-		InputStream stream = openInputStream( context, uri );
-		if ( null == stream ) {
-			return null;
-		}
-		
-		int orientation = ExifUtils.getExifOrientation( context, uri );
 
-		Bitmap bitmap = null;
-		int[] imageSize = new int[2];
-		final boolean decoded = decodeImageBounds( stream, imageSize );
-		IOUtils.closeSilently( stream );
-
-		if ( decoded ) {
-			int sampleSize;
-			if( maxW < 0 || maxH < 0 ) {
-				sampleSize = 1;
-			} else {
-				sampleSize = computeSampleSize( imageSize[0], imageSize[1], (int) ( maxW * 1.2 ), (int) ( maxH * 1.2 ), orientation );
-			}
-
-			BitmapFactory.Options options = getDefaultOptions();
-			options.inSampleSize = sampleSize;
-
-			bitmap = decodeBitmap( context, uri, options, maxW, maxH, orientation, 0 );
-		}
-
-		return bitmap;
-	}
 
 	static Bitmap decodeBitmap( Context context, Uri uri, BitmapFactory.Options options, int maxW, int maxH,
 			int orientation, int pass ) {
