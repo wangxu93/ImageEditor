@@ -24,9 +24,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.theartofdev.edmodo.cropper.CropImage;
 import com.yjing.imageeditlibrary.BaseActivity;
 import com.yjing.imageeditlibrary.R;
+import com.yjing.imageeditlibrary.coper.CropImage;
 import com.yjing.imageeditlibrary.editimage.contorl.SaveMode;
 import com.yjing.imageeditlibrary.editimage.fragment.MainMenuFragment;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
@@ -428,10 +428,10 @@ public class EditImageActivity extends BaseActivity {
                         if (mOpTimes == 0) {//并未修改图片
                             onSaveTaskDone();
                         } else {
-                            doSaveImage(shouldBack,inte);
+                            doSaveImage(shouldBack, inte);
                         }
                     } else {
-                        doSaveImage(shouldBack,inte);
+                        doSaveImage(shouldBack, inte);
                     }
 //                    if (inte != null) {
 //                        inte.completed();
@@ -450,10 +450,10 @@ public class EditImageActivity extends BaseActivity {
                             if (mOpTimes == 0) {//并未修改图片
                                 onSaveTaskDone();
                             } else {
-                                doSaveImage(shouldBack,inte);
+                                doSaveImage(shouldBack, inte);
                             }
                         } else {
-                            doSaveImage(shouldBack,inte);
+                            doSaveImage(shouldBack, inte);
                         }
 //                        if (inte != null) {
 //                            inte.completed();
@@ -464,7 +464,7 @@ public class EditImageActivity extends BaseActivity {
         }
     }
 
-    protected void doSaveImage(boolean shouldBack,SaveCompletedInte inte) {
+    protected void doSaveImage(boolean shouldBack, SaveCompletedInte inte) {
         if (mOpTimes <= 0)
             return;
 

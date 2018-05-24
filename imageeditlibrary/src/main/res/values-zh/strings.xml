@@ -22,23 +22,20 @@
     <string name="auto_newline">自动换行</string>
     <string name="save_error">图片保存失败</string>
 
-    <string-array name="fliters">
-        <item>原始</item>
-        <item>软化</item>
-        <item>黑白</item>
-        <item>经典</item>
-        <item>华丽</item>
-        <item>复古</item>
-        <item>优雅</item>
-        <item>电影</item>
-        <item>回忆</item>
-        <item>优格</item>
-        <item>流年</item>
-        <item>发光</item>
-    </string-array>
-
     <string name="more">更多</string>
     <string name="exit_without_save">编辑的图片还未保存,确认退出吗？</string>
     <string name="confirm">确认</string>
     <string name="cancel">取消</string>
+
+    <string name="crop_image_activity_title"></string>
+    <string name="crop_image_menu_rotate_left">逆时针旋转</string>
+    <string name="crop_image_menu_rotate_right">旋转</string>
+    <string name="crop_image_menu_crop">裁剪</string>
+    <string name="crop_image_menu_flip">翻转</string>
+    <string name="crop_image_menu_flip_horizontally">水平翻转</string>
+    <string name="crop_image_menu_flip_vertically">垂直翻转</string>
+
+    <string name="pick_image_intent_chooser_title">选择来源</string>
+
+    <string name="crop_image_activity_no_permissions">正在取消，该操作未获得所需权限。</string>
 </resources>

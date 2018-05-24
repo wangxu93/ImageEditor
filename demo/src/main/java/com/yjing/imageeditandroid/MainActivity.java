@@ -19,8 +19,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
+import com.yjing.imageeditlibrary.coper.CropImage;
+import com.yjing.imageeditlibrary.coper.CropImageView;
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
 import com.yjing.imageeditlibrary.utils.BitmapUtils;
 import com.yjing.imageeditlibrary.picchooser.SelectPictureActivity;

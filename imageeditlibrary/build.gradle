@@ -30,7 +30,7 @@ dependencies {
     compile "com.android.support:recyclerview-v7:${supportLibVer}"
     compile "com.android.support:support-v4:${supportLibVer}"
     implementation "com.android.support:exifinterface:$supportLibVer"
-    compile(name: 'image_croper', ext: 'aar')
+//    compile(name: 'image_croper', ext: 'aar')
 }
 
 repositories {

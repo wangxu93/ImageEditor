@@ -10,9 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
+
 import com.yjing.imageeditlibrary.R;
+import com.yjing.imageeditlibrary.coper.CropImage;
+import com.yjing.imageeditlibrary.coper.CropImageView;
 import com.yjing.imageeditlibrary.editimage.AddTextActivity;
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
 import com.yjing.imageeditlibrary.editimage.contorl.SaveMode;
