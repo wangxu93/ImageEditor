@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -23,7 +24,6 @@ import com.yjing.imageeditlibrary.coper.CropImage;
 import com.yjing.imageeditlibrary.coper.CropImageView;
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
 import com.yjing.imageeditlibrary.utils.BitmapUtils;
-import com.yjing.imageeditlibrary.picchooser.SelectPictureActivity;
 
 import java.io.File;
 
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void gotoTestActivity(){
+    private void gotoTestActivity() {
         CropImage.activity(null).setGuidelines(CropImageView.Guidelines.ON)
                 .setBorderLineColor(Color.WHITE)
                 .setBorderCornerColor(Color.WHITE)
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void openAblum() {
         MainActivity.this.startActivityForResult(new Intent(
-                        MainActivity.this, SelectPictureActivity.class),
+                        Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI),
                 SELECT_GALLERY_IMAGE_CODE);
     }
 
@@ -246,9 +246,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void handleSelectFromAblum(Intent data) {
-        String filepath = data.getStringExtra("imgPath");
-        path = filepath;
-        // System.out.println("path---->"+path);
+        Uri selectedImage = data.getData();
+        String[] filePathColumns = {MediaStore.Images.Media.DATA};
+        Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
+        c.moveToFirst();
+        int columnIndex = c.getColumnIndex(filePathColumns[0]);
+        path = c.getString(columnIndex);
         startLoadTask();
     }
 

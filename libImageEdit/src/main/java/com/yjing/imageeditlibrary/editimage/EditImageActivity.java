@@ -32,10 +32,8 @@ import com.yjing.imageeditlibrary.editimage.fragment.MainMenuFragment;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
 import com.yjing.imageeditlibrary.editimage.inter.OnViewTouthListener;
 import com.yjing.imageeditlibrary.editimage.inter.SaveCompletedInte;
-import com.yjing.imageeditlibrary.editimage.view.CropImageView;
 import com.yjing.imageeditlibrary.editimage.view.CustomPaintView;
 import com.yjing.imageeditlibrary.editimage.view.PinchImageView;
-import com.yjing.imageeditlibrary.editimage.view.RotateImageView;
 import com.yjing.imageeditlibrary.editimage.view.StickerView;
 import com.yjing.imageeditlibrary.editimage.view.TextStickerView;
 import com.yjing.imageeditlibrary.editimage.view.mosaic.MosaicView;
@@ -76,8 +74,7 @@ public class EditImageActivity extends BaseActivity {
     private View saveBtn;// 保存按钮
 
     public StickerView mStickerView;// 贴图层View
-    public CropImageView mCropPanel;// 剪切操作控件
-    public RotateImageView mRotatePanel;// 旋转操作控件
+
     public TextStickerView mTextStickerView;//文本贴图显示View
     public CustomPaintView mPaintView;//涂鸦模式画板
     public MosaicView mMosaicView;//马赛克模式画板
@@ -177,8 +174,6 @@ public class EditImageActivity extends BaseActivity {
         });
 
         mStickerView = (StickerView) findViewById(R.id.sticker_panel);
-        mCropPanel = (CropImageView) findViewById(R.id.crop_panel);
-        mRotatePanel = (RotateImageView) findViewById(R.id.rotate_panel);
         mTextStickerView = (TextStickerView) findViewById(R.id.text_sticker_panel);
         mPaintView = (CustomPaintView) findViewById(R.id.custom_paint_view);
         mMosaicView = (MosaicView) findViewById(R.id.mosaic_view);

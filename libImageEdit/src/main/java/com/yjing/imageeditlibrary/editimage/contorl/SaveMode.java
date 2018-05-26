@@ -8,12 +8,9 @@ import android.view.View;
 
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
 import com.yjing.imageeditlibrary.editimage.fragment.AddTextFragment;
-import com.yjing.imageeditlibrary.editimage.fragment.CropFragment;
-import com.yjing.imageeditlibrary.editimage.fragment.FliterListFragment;
 import com.yjing.imageeditlibrary.editimage.fragment.MainMenuFragment;
 import com.yjing.imageeditlibrary.editimage.fragment.MosaicFragment;
 import com.yjing.imageeditlibrary.editimage.fragment.PaintFragment;
-import com.yjing.imageeditlibrary.editimage.fragment.RotateFragment;
 import com.yjing.imageeditlibrary.editimage.fragment.StirckerFragment;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
 
@@ -50,8 +47,6 @@ public class SaveMode {
         MOSAIC,//马赛克模式
         PAINT,//绘制模式
         STICKERS,// 贴图模式
-        //        FILTER,// 滤镜模式
-//        ROTATE,// 旋转模式
         TEXT,// 文字模式
         CROP// 剪裁模式
     }
@@ -66,9 +61,7 @@ public class SaveMode {
         private final View bottomView;
         private final View aboveView;
         public StirckerFragment mStirckerFragment;// 贴图Fragment
-        public FliterListFragment mFliterListFragment;// 滤镜FliterListFragment
-        public CropFragment mCropFragment;// 图片剪裁Fragment
-        public RotateFragment mRotateFragment;// 图片旋转Fragment
+
         public AddTextFragment mAddTextFragment;//图片添加文字
         public PaintFragment mPaintFragment;//绘制模式Fragment
         public MosaicFragment mMosaicFragment;//马赛克模式Fragment
@@ -83,9 +76,6 @@ public class SaveMode {
             this.aboveView = aboveView;
 
             mStirckerFragment = StirckerFragment.newInstance(activity);
-            mFliterListFragment = FliterListFragment.newInstance(activity);
-            mCropFragment = CropFragment.newInstance(activity);
-            mRotateFragment = RotateFragment.newInstance(activity);
             mAddTextFragment = AddTextFragment.newInstance(activity);
             mPaintFragment = PaintFragment.newInstance(activity);
             mMosaicFragment = MosaicFragment.newInstance(activity);
@@ -93,9 +83,6 @@ public class SaveMode {
             supportFragmentManager.beginTransaction()
                     .add(bottomView.getId(), mAddTextFragment).hide(mAddTextFragment)
                     .add(fl_edit_bottom_height.getId(), mStirckerFragment).hide(mStirckerFragment)
-                    .add(aboveView.getId(), mFliterListFragment).hide(mFliterListFragment)
-                    .add(fl_edit_bottom_height.getId(), mCropFragment).hide(mCropFragment)
-                    .add(aboveView.getId(), mRotateFragment).hide(mRotateFragment)
                     .add(aboveView.getId(), mPaintFragment).hide(mPaintFragment)
                     .add(aboveView.getId(), mMosaicFragment).hide(mMosaicFragment).commit();
 
@@ -115,7 +102,7 @@ public class SaveMode {
                 bottomView.setVisibility(View.VISIBLE);
                 fl_edit_bottom_height.setVisibility(View.GONE);
                 aboveView.setVisibility(View.GONE);
-            } else if (x instanceof CropFragment || x instanceof StirckerFragment) {
+            } else if ( x instanceof StirckerFragment) {
                 fl_edit_bottom_height.setVisibility(View.VISIBLE);
                 aboveView.setVisibility(View.GONE);
                 bottomView.setVisibility(View.GONE);
@@ -149,12 +136,6 @@ public class SaveMode {
             switch (mode) {
                 case STICKERS:// 贴图
                     return mStirckerFragment;
-                //            case FILTER:// 滤镜
-                //                return mFliterListFragment;
-                case CROP://剪裁
-                    return mCropFragment;
-                //            case ROTATE://旋转
-                //                return mRotateFragment;
                 case TEXT://添加文字
                     return mAddTextFragment;
                 case PAINT:
@@ -170,7 +151,7 @@ public class SaveMode {
         public void setContainerVisiable(Fragment fragment, int visiable) {
             if (fragment instanceof AddTextFragment) {
                 bottomView.setVisibility(visiable);
-            } else if (fragment instanceof CropFragment || fragment instanceof StirckerFragment) {
+            } else if ( fragment instanceof StirckerFragment) {
                 fl_edit_bottom_height.setVisibility(visiable);
             } else {
                 aboveView.setVisibility(visiable);

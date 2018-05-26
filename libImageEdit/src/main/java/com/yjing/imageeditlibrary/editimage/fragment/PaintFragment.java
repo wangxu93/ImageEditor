@@ -4,25 +4,19 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
-import android.widget.SeekBar;
 
 import com.yjing.imageeditlibrary.R;
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
 import com.yjing.imageeditlibrary.editimage.inter.SaveCompletedInte;
 import com.yjing.imageeditlibrary.editimage.task.StickerTask;
-import com.yjing.imageeditlibrary.editimage.view.ColorSeekBar;
 import com.yjing.imageeditlibrary.editimage.view.CustomPaintView;
 import com.yjing.imageeditlibrary.editimage.view.MainColorSelectorView;
-import com.yjing.imageeditlibrary.editimage.view.PaintModeView;
 
 
 /**

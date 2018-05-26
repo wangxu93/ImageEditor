@@ -43,19 +43,6 @@
             android:layout_height="fill_parent"
             android:layout_gravity="center" />
 
-        <com.yjing.imageeditlibrary.editimage.view.CropImageView
-            android:id="@+id/crop_panel"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center"
-            android:visibility="gone" />
-
-        <com.yjing.imageeditlibrary.editimage.view.RotateImageView
-            android:id="@+id/rotate_panel"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center"
-            android:visibility="gone" />
         <include
             android:id="@+id/loading"
             layout="@layout/save_loading_view"/>
