@@ -14,6 +14,7 @@ import com.yjing.imageeditlibrary.coper.CropImage;
 import com.yjing.imageeditlibrary.coper.CropImageView;
 import com.yjing.imageeditlibrary.editimage.AddTextActivity;
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
+import com.yjing.imageeditlibrary.editimage.PaletteActivity;
 import com.yjing.imageeditlibrary.editimage.contorl.SaveMode;
 import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
 import com.yjing.imageeditlibrary.editimage.inter.SaveCompletedInte;
@@ -27,12 +28,11 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
     private View mainView;
     private EditImageActivity activity;
     private View stickerBtn;// 贴图按钮
-    //    private View fliterBtn;// 滤镜按钮
     private View cropBtn;// 剪裁按钮
-    //    private View rotateBtn;// 旋转按钮
     private View mTextBtn;//文字型贴图添加
     private View mPaintBtn;//编辑按钮
     private View mosaicBtn;//马赛克按钮
+    private View btn_Palette;//马赛克按钮
 
     public static MainMenuFragment newInstance(EditImageActivity activity) {
         MainMenuFragment fragment = new MainMenuFragment();
@@ -54,7 +54,7 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
         stickerBtn = mainView.findViewById(R.id.btn_stickers);
 //        fliterBtn = mainView.findViewById(R.id.btn_fliter);
         cropBtn = mainView.findViewById(R.id.btn_crop);
-//        rotateBtn = mainView.findViewById(R.id.btn_rotate);
+        btn_Palette = mainView.findViewById(R.id.btn_Palette);
         mTextBtn = mainView.findViewById(R.id.btn_text);
         mPaintBtn = mainView.findViewById(R.id.btn_paint);
         mosaicBtn = mainView.findViewById(R.id.btn_mosaic);
@@ -66,7 +66,7 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
         super.onActivityCreated(savedInstanceState);
 
         stickerBtn.setOnClickListener(this);
-//        fliterBtn.setOnClickListener(this);
+        btn_Palette.setOnClickListener(this);
         cropBtn.setOnClickListener(this);
 //        rotateBtn.setOnClickListener(this);
         mTextBtn.setOnClickListener(this);
@@ -126,6 +126,16 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
                 saveBtnClick.onClick(null);
                 activity.editFactory.hideFragment(activity.editFactory.getFragment(clickMode));
                 return;
+            }else if(clickMode == SaveMode.EditMode.PALETTE){
+                EditImageActivity.SaveBtnClick saveBtnClick = activity.new SaveBtnClick(false, new SaveCompletedInte() {
+                    @Override
+                    public void completed() {
+                        launchPalette();
+                    }
+                });
+                saveBtnClick.onClick(null);
+                activity.editFactory.hideFragment(activity.editFactory.getFragment(clickMode));
+                return;
             }
             //3.设置当前模式改变之后要显示的fragment
             activity.editFactory.setCurrentEditMode(clickMode);
@@ -134,6 +144,15 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             //5.保存应用图标的更改
 //            activity.bannerFlipper.showNext();
         }
+    }
+
+    private void launchPalette() {
+        File file = new File(activity.saveFilePath);
+        File file1 = new File(Environment.getExternalStorageDirectory().getAbsoluteFile().toString() + "/testCrop/");
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(PaletteActivity.FIELD_INPUT_URI,Uri.fromFile(file));
+        bundle.putParcelable(PaletteActivity.FIELD_OUTPUT_URI,Uri.fromFile(file1));
+        PaletteActivity.launch(activity,bundle);
     }
 
     private void gotoCropImage() {
@@ -167,6 +186,8 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             case TEXT:
                 v = mTextBtn;
                 break;
+            case PALETTE:
+                v = btn_Palette;
         }
         return v;
     }
@@ -175,8 +196,8 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
         SaveMode.EditMode clickMode = SaveMode.EditMode.NONE;
         if (v == stickerBtn) {
             clickMode = SaveMode.EditMode.STICKERS;
-//        } else if (v == fliterBtn) {
-//            clickMode = SaveMode.EditMode.FILTER;
+        } else if (v == btn_Palette) {
+            clickMode = SaveMode.EditMode.PALETTE;
         } else if (v == cropBtn) {
             clickMode = SaveMode.EditMode.CROP;
 //        } else if (v == rotateBtn) {

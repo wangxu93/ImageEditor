@@ -430,19 +430,20 @@ public class EditImageActivity extends BaseActivity {
             //迭代法去保存图片
             modes = SaveMode.EditMode.values();
             modeIndex = 0;
-            applyEdit(v);
+            final boolean shouldBack = v != null;
+            applyEdit(v,shouldBack);
         }
 
 
         /**
          * 迭代方式一层一层保存图片
          */
-        private void applyEdit(final View v) {
-            final boolean shouldBack = v != null;
-            if (modes[modeIndex] == SaveMode.EditMode.NONE || modes[modeIndex] == SaveMode.EditMode.CROP) {
+        private void applyEdit(final View v, final boolean shouldBack) {
+
+            if (modes[modeIndex] == SaveMode.EditMode.NONE || modes[modeIndex] == SaveMode.EditMode.CROP|| modes[modeIndex] == SaveMode.EditMode.PALETTE) {
                 modeIndex++;
                 if (modeIndex < modes.length) {
-                    applyEdit(v);
+                    applyEdit(v,shouldBack);
                 } else {
                     if (isSaveImageToLocal) {
                         if (mOpTimes == 0) {//并未修改图片
@@ -453,34 +454,30 @@ public class EditImageActivity extends BaseActivity {
                     } else {
                         doSaveImage(shouldBack, inte);
                     }
-//                    if (inte != null) {
-//                        inte.completed();
-//                    }
                 }
                 return;
             }
             ImageEditInte fragment = (ImageEditInte) editFactory.getFragment(modes[modeIndex++]);
-            fragment.appleEdit(new SaveCompletedInte() {
-                @Override
-                public void completed() {
-                    if (modeIndex < modes.length) {
-                        applyEdit(v);
-                    } else {
-                        if (isSaveImageToLocal) {
-                            if (mOpTimes == 0) {//并未修改图片
-                                onSaveTaskDone();
+            if (fragment != null) {
+                fragment.appleEdit(new SaveCompletedInte() {
+                    @Override
+                    public void completed() {
+                        if (modeIndex < modes.length) {
+                            applyEdit(v,shouldBack);
+                        } else {
+                            if (isSaveImageToLocal) {
+                                if (mOpTimes == 0) {//并未修改图片
+                                    onSaveTaskDone();
+                                } else {
+                                    doSaveImage(shouldBack, inte);
+                                }
                             } else {
                                 doSaveImage(shouldBack, inte);
                             }
-                        } else {
-                            doSaveImage(shouldBack, inte);
                         }
-//                        if (inte != null) {
-//                            inte.completed();
-//                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 

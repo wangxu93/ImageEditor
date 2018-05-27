@@ -48,7 +48,8 @@ public class SaveMode {
         PAINT,//绘制模式
         STICKERS,// 贴图模式
         TEXT,// 文字模式
-        CROP// 剪裁模式
+        CROP,// 剪裁模式
+        PALETTE// 调色
     }
 
     /**

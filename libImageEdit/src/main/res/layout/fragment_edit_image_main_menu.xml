@@ -1,5 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="@dimen/bottom_banner_height"
     android:gravity="center"
     android:orientation="horizontal">
@@ -67,6 +67,21 @@
     </LinearLayout>
     <LinearLayout
         android:id="@+id/btn_crop"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@string/crop"
+            android:src="@drawable/edit_image_crop_selector" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/btn_Palette"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
