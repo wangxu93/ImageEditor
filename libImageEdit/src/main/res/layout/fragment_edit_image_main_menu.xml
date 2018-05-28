@@ -65,6 +65,23 @@
             android:src="@drawable/edit_image_mosaic_tool_selector" />
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btn_Palette"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@string/crop"
+            android:src="@drawable/edit_image_palette" />
+
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/btn_crop"
         android:layout_width="0dp"
@@ -80,21 +97,7 @@
             android:src="@drawable/edit_image_crop_selector" />
 
     </LinearLayout>
-    <LinearLayout
-        android:id="@+id/btn_Palette"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="@string/crop"
-            android:src="@drawable/edit_image_crop_selector" />
-
-    </LinearLayout>
 
 </LinearLayout>
 
