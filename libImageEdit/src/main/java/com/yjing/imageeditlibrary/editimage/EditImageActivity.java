@@ -227,13 +227,13 @@ public class EditImageActivity extends BaseActivity {
                 return;
             }
             visMode = true;
-            setMainPageCoverViewStatus(View.GONE);
+            setMainPageCoverViewStatus(View.GONE,bottomViewVisibity == View.VISIBLE);
         }
 
         @Override
         public void onTouchUp() {
             visMode = false;
-            setMainPageCoverViewStatus(View.VISIBLE);
+            setMainPageCoverViewStatus(View.VISIBLE,bottomViewVisibity == View.VISIBLE);
         }
     };
 
@@ -255,7 +255,7 @@ public class EditImageActivity extends BaseActivity {
                 return;
             }
             paintVisMode = true;
-            setMainPageCoverViewStatus(View.GONE);
+            setMainPageCoverViewStatus(View.GONE,true);
         }
 
         @Override
@@ -278,11 +278,11 @@ public class EditImageActivity extends BaseActivity {
                 return;
             }
             paintVisMode = false;
-            setMainPageCoverViewStatus(View.VISIBLE);
+            setMainPageCoverViewStatus(View.VISIBLE,true);
         }
     };
 
-    private void setMainPageCoverViewStatus(int status) {
+    private void setMainPageCoverViewStatus(int status,boolean optMainMenu) {
         if (lastOptrationVisibity == status) {
             return;
         }
@@ -291,11 +291,13 @@ public class EditImageActivity extends BaseActivity {
         setViewAnim(titleBar, status);
         rlBottomView.setVisibility(status);
         setViewAnim(rlBottomView, status);
-        fl_edit_above_mainmenu.setVisibility(bottomViewVisibity);
-        setViewAnim(fl_edit_above_mainmenu, bottomViewVisibity);
-        if (status == View.GONE) {
-            fl_edit_above_mainmenu.setVisibility(View.GONE);
-            setViewAnim(fl_edit_above_mainmenu, View.GONE);
+        if (optMainMenu) {
+            fl_edit_above_mainmenu.setVisibility(bottomViewVisibity);
+            setViewAnim(fl_edit_above_mainmenu, bottomViewVisibity);
+            if (status == View.GONE) {
+                fl_edit_above_mainmenu.setVisibility(View.GONE);
+                setViewAnim(fl_edit_above_mainmenu, View.GONE);
+            }
         }
     }
 
