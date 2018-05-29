@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ImageEditor.iml" filepath="$PROJECT_DIR$/ImageEditor.iml" />
-      <module fileurl="file://C:\Users\wangxu\Desktop\SimpleImageEditor-master\SimpleImageEditor.iml" filepath="C:\Users\wangxu\Desktop\SimpleImageEditor-master\SimpleImageEditor.iml" />
-      <module fileurl="file://C:\Users\wangxu\Desktop\ImageEditor\SimpleImageEditor-master.iml" filepath="C:\Users\wangxu\Desktop\ImageEditor\SimpleImageEditor-master.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../SimpleImageEditor-master/SimpleImageEditor.iml" filepath="$PROJECT_DIR$/../SimpleImageEditor-master/SimpleImageEditor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SimpleImageEditor-master.iml" filepath="$PROJECT_DIR$/SimpleImageEditor-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo/demo.iml" filepath="$PROJECT_DIR$/demo/demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/libImageEdit/libImageEdit.iml" filepath="$PROJECT_DIR$/libImageEdit/libImageEdit.iml" />
     </modules>

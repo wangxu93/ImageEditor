@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -638,6 +639,21 @@ public class EditImageActivity extends BaseActivity {
             File file = new File(saveFilePath);
             if (file.exists()) {
                 file.delete();
+            }
+            SaveMode.getInstant().setMode(SaveMode.EditMode.NONE);
+        }else if(requestCode == PaletteActivity.RESULT_CODE_OUTPUT_URL){
+            if (data != null && resultCode == Activity.RESULT_OK) {
+                Bundle bundle = data.getExtras();
+                if (bundle != null) {
+                    Uri uri = bundle.getParcelable(PaletteActivity.FIELD_OUTPUT_URI);
+                    if (uri != null) {
+                        loadImage(uri.getSchemeSpecificPart());
+                    }
+                    File file = new File(saveFilePath);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                }
             }
             SaveMode.getInstant().setMode(SaveMode.EditMode.NONE);
         }
