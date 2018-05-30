@@ -22,14 +22,14 @@ allprojects {
 
 subprojects {
     ext.compileSdkVer = 26
-    ext.buildToolsVer = "26.0.2"
-    ext.supportLibVer = "26.0.2"
+    ext.buildToolsVer = "26.1.0"
+    ext.supportLibVer = "26.1.0"
 }
 
 
 ext {
     compileSdkVersion = 26
-    buildToolsVersion = "26.0.2"
+    buildToolsVersion = "26.1.0"
     minsdkVersion = 14
     targetSdkVersion = 22
 }
