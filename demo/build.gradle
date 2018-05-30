@@ -31,6 +31,10 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':libImageEdit')
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    //RxJava的依赖包
+    compile 'io.reactivex.rxjava2:rxjava:2.0.3'
+//RxAndroid的依赖包
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 }
 repositories {
     flatDir {
@@ -40,4 +44,6 @@ repositories {
         url 'https://maven.google.com/'
         name 'Google'
     }
+
+
 }
