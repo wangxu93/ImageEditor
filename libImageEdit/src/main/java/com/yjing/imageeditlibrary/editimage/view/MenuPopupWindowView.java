@@ -26,7 +26,7 @@ public class MenuPopupWindowView extends PopupWindow implements View.OnClickList
     public MenuPopupWindowView(Context context) {
         super(context);
         LayoutInflater inflater = LayoutInflater.from(context);
-        View root = inflater.inflate(R.layout.topic_image_menu, null);
+        View root = inflater.inflate(R.layout.window_image_menu, null);
         btnSaveToGallery = view(root, R.id.btnSave);
         btnShare = view(root, R.id.btnShare);
         btnCancel = view(root, R.id.btnCancel);
