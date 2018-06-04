@@ -61,4 +61,8 @@
     <string name="pick_image_intent_chooser_title">Select source</string>
 
     <string name="crop_image_activity_no_permissions">Cancelling, required permissions are not granted</string>
+
+    <string name="forward">转发</string>
+    <string name="save_to_cloud">保存到云盘</string>
+    <string name="save_image">保存到相册</string>
 </resources>

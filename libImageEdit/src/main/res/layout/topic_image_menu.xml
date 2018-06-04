@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/bg_gray"
+              android:orientation="vertical"
+              android:padding="12dp">
+
+    <Button
+        android:id="@+id/btnShare"
+        style="@style/btn_menu_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/forward"/>
+
+    <Button
+        android:id="@+id/btn_save_cloud"
+        style="@style/btn_menu_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/save_to_cloud"/>
+
+    <Button
+        android:id="@+id/btnSave"
+        style="@style/btn_menu_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/save_image"/>
+
+
+    <Button
+        android:id="@+id/btnCancel"
+        style="@style/menu_text_black"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/menu_btn_cancle_bg"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/cancel"/>
+</LinearLayout>

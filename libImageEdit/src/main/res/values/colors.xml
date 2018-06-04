@@ -10,6 +10,7 @@
     <color name="materialcolorpicker__dribbledark">#c32361</color>
     <color name="materialcolorpicker__black">#000000</color>
     <color name="materialcolorpicker__dialogcolor">#009688</color>
+    <color name="bg_gray">#f7f7f7</color>
 
     <color name="dkgray">#80808FF0</color>
     <color name="yello">#F8F8FF00</color>

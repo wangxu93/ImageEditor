@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -20,12 +19,21 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.yjing.imageeditlibrary.coper.CropImage;
-import com.yjing.imageeditlibrary.coper.CropImageView;
+import com.bumptech.glide.Glide;
 import com.yjing.imageeditlibrary.editimage.EditImageActivity;
 import com.yjing.imageeditlibrary.utils.BitmapUtils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.regex.Pattern;
+
+import static com.yjing.imageeditlibrary.editimage.EditImageActivity.RESULT_TYPE;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final int REQUEST_PERMISSON_SORAGE = 1;
@@ -71,19 +79,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gotoTestActivity();
+                File outputFile = com.yjing.imageeditandroid.FileUtils.genEditFile();
+                EditImageActivity.start(MainActivity.this,1, path, outputFile.getAbsolutePath(), ACTION_REQUEST_EDITIMAGE);
+//                gotoTestActivity("https://mp.weixin.qq.com/s/nVUcXwR56fl_V1Jl-YZBZA");
             }
         });
     }
 
-    private void gotoTestActivity() {
-        CropImage.activity(null).setGuidelines(CropImageView.Guidelines.ON)
-                .setBorderLineColor(Color.WHITE)
-                .setBorderCornerColor(Color.WHITE)
-                .setBorderCornerOffset(-5)
-                .setBorderCornerThickness(10)
-                .setInitialCropWindowPaddingRatio(0)
-                .start(this);
+    private void gotoTestActivity(final String urls) {
+        startActivity(new Intent(this,TestActivity.class));
+
+    }
+
+    private static final Pattern[] ICON_PATTERNS = new Pattern[]{
+            Pattern.compile("rel=[\"']shortcut icon[\"'][^\r\n>]+?((?<=href=[\"']).+?(?=[\"']))"),
+            Pattern.compile("((?<=href=[\"']).+?(?=[\"']))[^\r\n<]+?rel=[\"']shortcut icon[\"']")};
+
+    private static String getIconUrlByRegex(String urlString) {
+
+//        try {
+//            String headString = getHead(urlString);
+//
+//            for (Pattern iconPattern : ICON_PATTERNS) {
+//                Matcher matcher = iconPattern.matcher(headString);
+//
+//                if (matcher.find()) {
+//                    String iconUrl = matcher.group(1);
+//                    if (iconUrl.contains("http"))
+//                        return iconUrl;
+//
+//                    if (iconUrl.charAt(0) == '/') {//判断是否为相对路径或根路径
+//                        URL url = new URL(urlString);
+//                        iconUrl = url.getProtocol() + "://" + url.getHost() + iconUrl;
+//                    } else {
+//                        iconUrl = urlString + "/" + iconUrl;
+//                    }
+//                    return iconUrl;
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        return null;
     }
 
     @Override
@@ -151,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void editImageClick() {
         File outputFile = com.yjing.imageeditandroid.FileUtils.genEditFile();
-        EditImageActivity.start(this, path, outputFile.getAbsolutePath(), ACTION_REQUEST_EDITIMAGE);
+        EditImageActivity.start(this,0, path, outputFile.getAbsolutePath(), ACTION_REQUEST_EDITIMAGE);
     }
 
     /**
@@ -233,6 +270,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void handleEditorImage(Intent data) {
         String newFilePath = data.getStringExtra(EditImageActivity.SAVE_FILE_PATH);
         boolean isImageEdit = data.getBooleanExtra(EditImageActivity.IMAGE_IS_EDIT, false);
+        int intExtra = data.getIntExtra(RESULT_TYPE, 0);
+        Toast.makeText(context, intExtra+"", Toast.LENGTH_SHORT).show();
 
         if (isImageEdit) {
             Toast.makeText(this, getString(R.string.save_path, newFilePath), Toast.LENGTH_LONG).show();

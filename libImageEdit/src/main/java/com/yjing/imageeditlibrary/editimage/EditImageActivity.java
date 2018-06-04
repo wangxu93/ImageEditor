@@ -12,10 +12,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.MenuPopupWindow;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -34,6 +35,7 @@ import com.yjing.imageeditlibrary.editimage.inter.ImageEditInte;
 import com.yjing.imageeditlibrary.editimage.inter.OnViewTouthListener;
 import com.yjing.imageeditlibrary.editimage.inter.SaveCompletedInte;
 import com.yjing.imageeditlibrary.editimage.view.CustomPaintView;
+import com.yjing.imageeditlibrary.editimage.view.MenuPopupWindowView;
 import com.yjing.imageeditlibrary.editimage.view.PinchImageView;
 import com.yjing.imageeditlibrary.editimage.view.StickerView;
 import com.yjing.imageeditlibrary.editimage.view.TextStickerView;
@@ -53,6 +55,14 @@ public class EditImageActivity extends BaseActivity {
     public static final String SAVE_FILE_PATH = "save_file_path";
 
     public static final String IMAGE_IS_EDIT = "image_is_edit";
+
+    public static final int TYPE_DEFAULT = 0;
+    public static final int TYPE_FORWARD = 1;
+    public static final int TYPE_CLOND = 2;
+    public static final int TYPE_SAVE = 3;
+
+    public static final String RESULT_TYPE = "resultType";
+    public static final String SHOW_MUNU = "showMenu";
 
     public static final int REQUESTCODE_ADDTEXT = 0xFF00;
     public static final int REQUEST_SELECT_SMAIL = 0x00F0;
@@ -93,6 +103,9 @@ public class EditImageActivity extends BaseActivity {
     private Animation mAnim_out;
     private Handler mHandler = new Handler();
     private View loading;
+    private int showMenuWindow = 0;
+
+    private int resultType = 0;
 
     /**
      * @param context
@@ -100,7 +113,7 @@ public class EditImageActivity extends BaseActivity {
      * @param outputPath    图片保存路径
      * @param requestCode
      */
-    public static void start(Activity context, final String editImagePath, final String outputPath, final int requestCode) {
+    public static void start(Activity context, int showMenuView,final String editImagePath, final String outputPath, final int requestCode) {
         if (TextUtils.isEmpty(editImagePath)) {
             Toast.makeText(context, R.string.no_choose, Toast.LENGTH_SHORT).show();
             return;
@@ -109,6 +122,7 @@ public class EditImageActivity extends BaseActivity {
         Intent it = new Intent(context, EditImageActivity.class);
         it.putExtra(EditImageActivity.FILE_PATH, editImagePath);
         it.putExtra(EditImageActivity.EXTRA_OUTPUT, outputPath);
+        it.putExtra(SHOW_MUNU,showMenuView);
         context.startActivityForResult(it, requestCode);
     }
 
@@ -137,6 +151,7 @@ public class EditImageActivity extends BaseActivity {
     private void getData() {
         filePath = getIntent().getStringExtra(FILE_PATH);
         saveFilePath = getIntent().getStringExtra(EXTRA_OUTPUT);// 保存图片路径
+        showMenuWindow = getIntent().getIntExtra(SHOW_MUNU,TYPE_DEFAULT);
         loadImage(filePath);
     }
 
@@ -154,7 +169,17 @@ public class EditImageActivity extends BaseActivity {
         applyBtn = findViewById(R.id.apply);
         applyBtn.setOnClickListener(new ApplyBtnClick());
         saveBtn = findViewById(R.id.save_btn);
-        saveBtn.setOnClickListener(new SaveBtnClick(true, null));
+        saveBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (showMenuWindow == 1) {
+                    showPopupWindow();
+                }else{
+                    new SaveBtnClick(true, null).onClick(saveBtn);
+                }
+
+            }
+        });
 
         mainImage = (PinchImageView) findViewById(R.id.main_image);
         backBtn = findViewById(R.id.back_btn);// 退出按钮
@@ -228,15 +253,29 @@ public class EditImageActivity extends BaseActivity {
                 return;
             }
             visMode = true;
-            setMainPageCoverViewStatus(View.GONE,bottomViewVisibity == View.VISIBLE);
+            setMainPageCoverViewStatus(View.GONE, bottomViewVisibity == View.VISIBLE);
         }
 
         @Override
         public void onTouchUp() {
             visMode = false;
-            setMainPageCoverViewStatus(View.VISIBLE,bottomViewVisibity == View.VISIBLE);
+            setMainPageCoverViewStatus(View.VISIBLE, bottomViewVisibity == View.VISIBLE);
         }
     };
+
+    private void showPopupWindow() {
+        MenuPopupWindowView menuPopupWindow = new MenuPopupWindowView(this);
+        menuPopupWindow.setOnItemClickListener(new MenuPopupWindowView.OnItemClickListener() {
+            @Override
+            public void onItemClick(int type) {
+                resultType = type;
+                if (type != TYPE_DEFAULT) {
+                    new SaveBtnClick(true, null).onClick(saveBtn);
+                }
+            }
+        });
+        menuPopupWindow.showAtLocation(titleBar, Gravity.BOTTOM, 0, 0);
+    }
 
     private boolean paintVisMode = false; //将一次操作时间延长，产品要求如果快速画的时候不能老是显示隐藏titlebar
     private boolean moveDeleteMode = false; //有时候不能remove掉msg，就要使用状态过滤
@@ -256,7 +295,7 @@ public class EditImageActivity extends BaseActivity {
                 return;
             }
             paintVisMode = true;
-            setMainPageCoverViewStatus(View.GONE,true);
+            setMainPageCoverViewStatus(View.GONE, true);
         }
 
         @Override
@@ -279,11 +318,11 @@ public class EditImageActivity extends BaseActivity {
                 return;
             }
             paintVisMode = false;
-            setMainPageCoverViewStatus(View.VISIBLE,true);
+            setMainPageCoverViewStatus(View.VISIBLE, true);
         }
     };
 
-    private void setMainPageCoverViewStatus(int status,boolean optMainMenu) {
+    private void setMainPageCoverViewStatus(int status, boolean optMainMenu) {
         if (lastOptrationVisibity == status) {
             return;
         }
@@ -434,7 +473,7 @@ public class EditImageActivity extends BaseActivity {
             modes = SaveMode.EditMode.values();
             modeIndex = 0;
             final boolean shouldBack = v != null;
-            applyEdit(v,shouldBack);
+            applyEdit(v, shouldBack);
         }
 
 
@@ -443,10 +482,10 @@ public class EditImageActivity extends BaseActivity {
          */
         private void applyEdit(final View v, final boolean shouldBack) {
 
-            if (modes[modeIndex] == SaveMode.EditMode.NONE || modes[modeIndex] == SaveMode.EditMode.CROP|| modes[modeIndex] == SaveMode.EditMode.PALETTE) {
+            if (modes[modeIndex] == SaveMode.EditMode.NONE || modes[modeIndex] == SaveMode.EditMode.CROP || modes[modeIndex] == SaveMode.EditMode.PALETTE) {
                 modeIndex++;
                 if (modeIndex < modes.length) {
-                    applyEdit(v,shouldBack);
+                    applyEdit(v, shouldBack);
                 } else {
                     if (isSaveImageToLocal) {
                         if (mOpTimes == 0) {//并未修改图片
@@ -466,7 +505,7 @@ public class EditImageActivity extends BaseActivity {
                     @Override
                     public void completed() {
                         if (modeIndex < modes.length) {
-                            applyEdit(v,shouldBack);
+                            applyEdit(v, shouldBack);
                         } else {
                             if (isSaveImageToLocal) {
                                 if (mOpTimes == 0) {//并未修改图片
@@ -544,8 +583,7 @@ public class EditImageActivity extends BaseActivity {
         Intent returnIntent = new Intent();
         returnIntent.putExtra(SAVE_FILE_PATH, saveFilePath);
         returnIntent.putExtra(IMAGE_IS_EDIT, mOpTimes > 0);
-
-        FileUtils.ablumUpdate(this, saveFilePath);
+        returnIntent.putExtra(RESULT_TYPE,resultType);
         setResult(RESULT_OK, returnIntent);
         finish();
     }
@@ -601,6 +639,9 @@ public class EditImageActivity extends BaseActivity {
                     onSaveTaskDone();
                 }
             } else {
+                if (isFinishing()) {
+                    return;
+                }
                 Toast.makeText(mContext, R.string.save_error, Toast.LENGTH_SHORT).show();
             }
         }
@@ -641,7 +682,7 @@ public class EditImageActivity extends BaseActivity {
                 file.delete();
             }
             SaveMode.getInstant().setMode(SaveMode.EditMode.NONE);
-        }else if(requestCode == PaletteActivity.RESULT_CODE_OUTPUT_URL){
+        } else if (requestCode == PaletteActivity.RESULT_CODE_OUTPUT_URL) {
             if (data != null && resultCode == Activity.RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 if (bundle != null) {

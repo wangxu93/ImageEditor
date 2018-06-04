@@ -34,4 +34,18 @@
         <item name="android:thumb">@drawable/icon_seekbar_thumb</item>
     </style>
 
+    <style name="popupwindow_anmation">
+        <item name="android:windowEnterAnimation">@anim/toolbar_in_bottom</item>
+        <item name="android:windowExitAnimation">@anim/toolbar_out_bottom</item>
+    </style>
+
+    <style name="menu_text_black">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="btn_menu_style" parent="menu_text_black">
+        <item name="android:background">@drawable/menu_btn_sure_bg</item>
+    </style>
+
 </resources>
