@@ -697,6 +697,8 @@ public class EditImageActivity extends BaseActivity {
                 }
             }
             SaveMode.getInstant().setMode(SaveMode.EditMode.NONE);
+        } else if (requestCode == REQUEST_SELECT_SMAIL) {
+            editFactory.mStirckerFragment.onActivityResult(requestCode, resultCode, data);
         }
     }
 }
