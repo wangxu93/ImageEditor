@@ -37,7 +37,7 @@
             android:layout_height="30dp"
             android:gravity="right|center_vertical"
             android:text="@string/save"
-            android:textColor="#0099ff"
+            android:textColor="#fff"
             android:textSize="17sp" />
 
         <TextView

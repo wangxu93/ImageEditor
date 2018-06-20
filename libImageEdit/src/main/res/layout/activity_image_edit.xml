@@ -63,7 +63,7 @@
         <FrameLayout
             android:id="@+id/fl_main_menu"
             android:layout_width="match_parent"
-            android:background="#99000000"
+            android:background="#AF000000"
             android:layout_height="@dimen/bottom_banner_height"></FrameLayout>
 
         <FrameLayout
@@ -77,7 +77,7 @@
             android:id="@+id/fl_edit_bottom_full"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#99000000"
+            android:background="#AF000000"
             android:visibility="gone"></FrameLayout>
 
     </RelativeLayout>

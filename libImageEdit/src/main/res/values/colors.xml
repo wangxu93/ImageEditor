@@ -28,7 +28,7 @@
 
     <color name="black">#000000</color>
     <color name="top_bar_bg">#333333</color>
-    <color name="bottom_banner_bg">#66333333</color>
+    <color name="bottom_banner_bg">#AF000000</color>
     <color name="line__spilt">#444444</color>
     <color name="tranf">#00000000</color>
 
