@@ -103,6 +103,9 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
         if (clickMode == SaveMode.EditMode.NONE) {
             activity.backToMain();
         } else {
+            if (onModeChangeListener != null) {
+                onModeChangeListener.change();
+            }
             //0.退出之前模式
             ImageEditInte preEditMode = activity.editFactory.getCurrentMode();
             if (preEditMode != null) {
@@ -210,5 +213,15 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             clickMode = SaveMode.EditMode.MOSAIC;
         }
         return clickMode;
+    }
+
+    private OnModeChangeListener onModeChangeListener;
+
+    public void setOnModeChangeListener(OnModeChangeListener onModeChangeListener) {
+        this.onModeChangeListener = onModeChangeListener;
+    }
+
+    public interface OnModeChangeListener{
+        void change();
     }
 }

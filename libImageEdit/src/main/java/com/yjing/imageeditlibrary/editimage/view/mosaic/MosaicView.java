@@ -165,6 +165,9 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
 
         return true;
     }
+    private float moveX = 0;
+    private float moveY = 0;
+    private static final int MOVE_DES_SUITABLE = 10;
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
@@ -203,6 +206,8 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
                 if (onViewTouthListener != null) {
                     onViewTouthListener.onTouchDown();
                 }
+                moveX = event.getX();
+                moveY = event.getY();
                 touchPath = new MosaicPath();
                 touchPath.drawPath = new Path();
                 touchPath.drawPath.moveTo(x, y);
@@ -212,8 +217,10 @@ public class MosaicView extends View implements EditFunctionOperationInterface {
                 touchPaths.add(touchPath);
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (onViewTouthListener != null) {
-                    onViewTouthListener.onTouchMove();
+                if (Math.abs(event.getX() - moveX) > MOVE_DES_SUITABLE || Math.abs(event.getY() - moveY) > MOVE_DES_SUITABLE) {
+                    if (onViewTouthListener != null) {
+                        onViewTouthListener.onTouchMove();
+                    }
                 }
                 if (touchPath == null) {
                     touchPath = new MosaicPath();

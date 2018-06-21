@@ -13,9 +13,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.MenuPopupWindow;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,7 +41,6 @@ import com.yjing.imageeditlibrary.editimage.view.StickerView;
 import com.yjing.imageeditlibrary.editimage.view.TextStickerView;
 import com.yjing.imageeditlibrary.editimage.view.mosaic.MosaicView;
 import com.yjing.imageeditlibrary.utils.BitmapUtils;
-import com.yjing.imageeditlibrary.utils.FileUtils;
 
 import java.io.File;
 
@@ -50,6 +49,7 @@ import java.io.File;
  * 包含 1.贴图 2.滤镜 3.剪裁 4.底图旋转 功能
  */
 public class EditImageActivity extends BaseActivity {
+    private static final String TAG = "EditImageActivity";
     public static final String FILE_PATH = "file_path";
     public static final String EXTRA_OUTPUT = "extra_output";
     public static final String SAVE_FILE_PATH = "save_file_path";
@@ -113,7 +113,7 @@ public class EditImageActivity extends BaseActivity {
      * @param outputPath    图片保存路径
      * @param requestCode
      */
-    public static void start(Activity context, int showMenuView,final String editImagePath, final String outputPath, final int requestCode) {
+    public static void start(Activity context, int showMenuView, final String editImagePath, final String outputPath, final int requestCode) {
         if (TextUtils.isEmpty(editImagePath)) {
             Toast.makeText(context, R.string.no_choose, Toast.LENGTH_SHORT).show();
             return;
@@ -122,7 +122,7 @@ public class EditImageActivity extends BaseActivity {
         Intent it = new Intent(context, EditImageActivity.class);
         it.putExtra(EditImageActivity.FILE_PATH, editImagePath);
         it.putExtra(EditImageActivity.EXTRA_OUTPUT, outputPath);
-        it.putExtra(SHOW_MUNU,showMenuView);
+        it.putExtra(SHOW_MUNU, showMenuView);
         context.startActivityForResult(it, requestCode);
     }
 
@@ -151,7 +151,7 @@ public class EditImageActivity extends BaseActivity {
     private void getData() {
         filePath = getIntent().getStringExtra(FILE_PATH);
         saveFilePath = getIntent().getStringExtra(EXTRA_OUTPUT);// 保存图片路径
-        showMenuWindow = getIntent().getIntExtra(SHOW_MUNU,TYPE_DEFAULT);
+        showMenuWindow = getIntent().getIntExtra(SHOW_MUNU, TYPE_DEFAULT);
         loadImage(filePath);
     }
 
@@ -174,7 +174,7 @@ public class EditImageActivity extends BaseActivity {
             public void onClick(View v) {
                 if (showMenuWindow == 1) {
                     showPopupWindow();
-                }else{
+                } else {
                     new SaveBtnClick(true, null).onClick(saveBtn);
                 }
 
@@ -205,10 +205,11 @@ public class EditImageActivity extends BaseActivity {
         mMosaicView = (MosaicView) findViewById(R.id.mosaic_view);
 
 
-        mMosaicView.setOnViewTouthListener(onViewTouthListener);
+        mMosaicView.setOnViewTouthListener(onPaintViewTouthListener);
         mPaintView.setOnViewTouthListener(onPaintViewTouthListener);
         mTextStickerView.setOnViewTouthListener(onViewTouthListener);
         mStickerView.setOnViewTouthListener(onViewTouthListener);
+        mainImage.setOnViewTouthListener(onViewTouthListener);
 
         //放功能键的容器
         View fl_edit_bottom_height = findViewById(R.id.fl_edit_bottom_height);
@@ -219,6 +220,7 @@ public class EditImageActivity extends BaseActivity {
         //主要按键布局
         fl_main_menu = findViewById(R.id.fl_main_menu);
         mMainMenuFragment = MainMenuFragment.newInstance(this);
+        mMainMenuFragment.setOnModeChangeListener(onModeChangeListener);
         this.getSupportFragmentManager().beginTransaction().add(R.id.fl_main_menu, mMainMenuFragment)
                 .show(mMainMenuFragment).commit();
     }
@@ -235,34 +237,6 @@ public class EditImageActivity extends BaseActivity {
         mStickerView.setMainLevelMatrix(ma, imageBound);
     }
 
-    private int bottomViewVisibity = View.GONE;
-    private int lastOptrationVisibity = View.INVISIBLE;
-    private boolean visMode = false;
-    private OnViewTouthListener onViewTouthListener = new OnViewTouthListener() {
-        @Override
-        public void onTouchDown() {
-            if (paintVisMode) {
-                return;
-            }
-            bottomViewVisibity = fl_edit_above_mainmenu.getVisibility();
-        }
-
-        @Override
-        public void onTouchMove() {
-            if (visMode) {
-                return;
-            }
-            visMode = true;
-            setMainPageCoverViewStatus(View.GONE, bottomViewVisibity == View.VISIBLE);
-        }
-
-        @Override
-        public void onTouchUp() {
-            visMode = false;
-            setMainPageCoverViewStatus(View.VISIBLE, bottomViewVisibity == View.VISIBLE);
-        }
-    };
-
     private void showPopupWindow() {
         MenuPopupWindowView menuPopupWindow = new MenuPopupWindowView(this);
         menuPopupWindow.setOnItemClickListener(new MenuPopupWindowView.OnItemClickListener() {
@@ -277,31 +251,99 @@ public class EditImageActivity extends BaseActivity {
         menuPopupWindow.showAtLocation(titleBar, Gravity.BOTTOM, 0, 0);
     }
 
-    private boolean paintVisMode = false; //将一次操作时间延长，产品要求如果快速画的时候不能老是显示隐藏titlebar
-    private boolean moveDeleteMode = false; //有时候不能remove掉msg，就要使用状态过滤
-    private OnViewTouthListener onPaintViewTouthListener = new OnViewTouthListener() {
+    private MainMenuFragment.OnModeChangeListener onModeChangeListener = new MainMenuFragment.OnModeChangeListener() {
+        @Override
+        public void change() {
+
+        }
+    };
+
+    private OnViewTouthListener onViewTouthListener = new OnViewTouthListener() {
+        private boolean optMainMenu = false;  //记录画笔菜单是否显示出来了
+        private boolean isMenuShow = true;    //记录当前菜单是否是显示状态，单机的时候要用到
+
         @Override
         public void onTouchDown() {
-            if (paintVisMode) {
-                return;
-            }
-            bottomViewVisibity = fl_edit_above_mainmenu.getVisibility();
+            Log.i(TAG, "onTouchDown: ");
+            moveStatus = false;
+            optMainMenu = getMainMenuVisiblity() == View.VISIBLE;
         }
 
         @Override
         public void onTouchMove() {
-            moveDeleteMode = true;
-            if (paintVisMode) {
+
+            if (moveStatus) {
                 return;
             }
-            paintVisMode = true;
+            moveStatus = true;
+
+            if (!isMenuShow) {
+                return;
+            }
+            setMainPageCoverViewStatus(View.GONE, optMainMenu);
+            Log.i(TAG, "onTouchMove: ");
+        }
+
+        @Override
+        public void onTouchUp() {
+            Log.i(TAG, "onTouchUp: ");
+            if (moveStatus) {
+                setMainPageCoverViewStatus(View.VISIBLE, optMainMenu);
+                isMenuShow = true;
+            } else {
+                if (isMenuShow) {
+                    setMainPageCoverViewStatus(View.GONE, optMainMenu);
+                } else {
+                    setMainPageCoverViewStatus(View.VISIBLE, optMainMenu);
+                }
+                isMenuShow = !isMenuShow;
+            }
+            moveStatus = false;
+        }
+    };
+
+
+    private boolean moveStatus = false;  ///记录是否为move状态，多次move只执行第一次
+    private boolean delayedMoveStatus = false; //延长每次划线的时间，产品要求如果用户短时间多次的划线，就不要显示出菜单了，。。。，结合handler
+
+    private OnViewTouthListener onPaintViewTouthListener = new OnViewTouthListener() {
+        private boolean isMenuShow = true;   //记录当前菜单是否是显示状态，单机的时候要用到
+
+        @Override
+        public void onTouchDown() {
+
+
+        }
+
+        @Override
+        public void onTouchMove() {
+            delayedMoveStatus = true;
+            if (moveStatus) {
+                return;
+            }
+            moveStatus = true;
+            if (!isMenuShow) {
+                return;
+            }
             setMainPageCoverViewStatus(View.GONE, true);
         }
 
         @Override
         public void onTouchUp() {
-            moveDeleteMode = false;   //每次抬起设置false
-            sendShowDelayedMessage();
+            delayedMoveStatus = false;
+            if (moveStatus) {
+                isMenuShow = true;
+                sendShowDelayedMessage();
+            } else {
+                if (isMenuShow) {
+                    setMainPageCoverViewStatus(View.GONE, true);
+                    isMenuShow = false;
+                } else {
+                    setMainPageCoverViewStatus(View.VISIBLE, true);
+                    isMenuShow = true;
+                    moveStatus = false;
+                }
+            }
         }
     };
 
@@ -314,31 +356,30 @@ public class EditImageActivity extends BaseActivity {
     private Handler mOptHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (moveDeleteMode) {   //检查当前是否为抬起，有些情况remove不掉msg，所以要加一层判断
+            Log.i(TAG, "handleMessage: ");
+            if (delayedMoveStatus) {
                 return;
             }
-            paintVisMode = false;
             setMainPageCoverViewStatus(View.VISIBLE, true);
+            moveStatus = false;
         }
     };
 
     private void setMainPageCoverViewStatus(int status, boolean optMainMenu) {
-        if (lastOptrationVisibity == status) {
-            return;
-        }
-        lastOptrationVisibity = status;
+
         titleBar.setVisibility(status);
         setViewAnim(titleBar, status);
         rlBottomView.setVisibility(status);
         setViewAnim(rlBottomView, status);
         if (optMainMenu) {
-            fl_edit_above_mainmenu.setVisibility(bottomViewVisibity);
-            setViewAnim(fl_edit_above_mainmenu, bottomViewVisibity);
-            if (status == View.GONE) {
-                fl_edit_above_mainmenu.setVisibility(View.GONE);
-                setViewAnim(fl_edit_above_mainmenu, View.GONE);
-            }
+            fl_edit_above_mainmenu.setVisibility(status);
+            setViewAnim(fl_edit_above_mainmenu, status);
         }
+
+    }
+
+    private int getMainMenuVisiblity() {
+        return fl_edit_above_mainmenu.getVisibility();
     }
 
     private void setViewAnim(View v, int vis) {
@@ -583,7 +624,7 @@ public class EditImageActivity extends BaseActivity {
         Intent returnIntent = new Intent();
         returnIntent.putExtra(SAVE_FILE_PATH, saveFilePath);
         returnIntent.putExtra(IMAGE_IS_EDIT, mOpTimes > 0);
-        returnIntent.putExtra(RESULT_TYPE,resultType);
+        returnIntent.putExtra(RESULT_TYPE, resultType);
         setResult(RESULT_OK, returnIntent);
         finish();
     }

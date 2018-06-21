@@ -15,7 +15,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -60,6 +63,10 @@ public class PaletteActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     private View llHum;
     private ImageView ivHum;
     private ColorMatrixColorFilter mColorFilter;
+    private Animation mAnim_In;
+    private Animation mAnim_out;
+    private View llBottom;
+    private View titleBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +79,12 @@ public class PaletteActivity extends BaseActivity implements SeekBar.OnSeekBarCh
         initView();
         initListener();
         initData();
+        initAnim();
+    }
+
+    private void initAnim() {
+        mAnim_In = AnimationUtils.loadAnimation(this, R.anim.anim_in);
+        mAnim_out = AnimationUtils.loadAnimation(this, R.anim.anim_out);
     }
 
     private boolean initParams() {
@@ -120,9 +133,20 @@ public class PaletteActivity extends BaseActivity implements SeekBar.OnSeekBarCh
 
         tvBack.setOnClickListener(new ClickListener());
         tvFinish.setOnClickListener(new ClickListener());
+        ivLogo.setOnClickListener(new ClickListener());
+    }
+
+    private void setViewAnim(View v, int vis) {
+        if (vis == View.GONE) {
+            v.startAnimation(mAnim_out);
+        } else {
+            v.startAnimation(mAnim_In);
+        }
     }
 
     private void initView() {
+        llBottom = findViewById(R.id.llBottom);
+        titleBar = findViewById(R.id.titleBar);
         ivLogo = ((ImageView) findViewById(R.id.ivLogo));
         sbHum = ((AppCompatSeekBar) findViewById(R.id.sbHum));
         sbSatura = ((AppCompatSeekBar) findViewById(R.id.sbSatura));
@@ -206,8 +230,8 @@ public class PaletteActivity extends BaseActivity implements SeekBar.OnSeekBarCh
 
     }
 
-    private float getHumValue(int progress){
-        return progress/100.0f +0.5f;
+    private float getHumValue(int progress) {
+        return progress / 100.0f + 0.5f;
     }
 
     private float getlumValue(int progress) {
@@ -219,7 +243,6 @@ public class PaletteActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     }
 
     private class ClickListener implements View.OnClickListener {
-
         @Override
         public void onClick(View v) {
             int id = v.getId();
@@ -227,10 +250,27 @@ public class PaletteActivity extends BaseActivity implements SeekBar.OnSeekBarCh
                 onBackPressed();
             } else if (id == R.id.save_btn) {
                 onSaveImage();
-            } else {
+            } else if(id == R.id.ivLogo){
+                setMenuVisibity();
+            }else {
                 showKindsOfSeekbar(v.getId());
             }
         }
+    }
+    private boolean showMenu = true;
+    private void setMenuVisibity() {
+        if (showMenu) {
+            llBottom.setVisibility(View.GONE);
+            setViewAnim(llBottom,View.GONE);
+            titleBar.setVisibility(View.GONE);
+            setViewAnim(titleBar,View.GONE);
+        }else{
+            llBottom.setVisibility(View.VISIBLE);
+            setViewAnim(llBottom,View.VISIBLE);
+            titleBar.setVisibility(View.VISIBLE);
+            setViewAnim(titleBar,View.VISIBLE);
+        }
+        showMenu = !showMenu;
     }
 
     private void onSaveImage() {
@@ -338,8 +378,8 @@ public class PaletteActivity extends BaseActivity implements SeekBar.OnSeekBarCh
     private void buildResult() {
         Intent intent = new Intent();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(FIELD_OUTPUT_URI,Uri.fromFile(new File(mOutPath)));
+        bundle.putParcelable(FIELD_OUTPUT_URI, Uri.fromFile(new File(mOutPath)));
         intent.putExtras(bundle);
-        setResult(Activity.RESULT_OK,intent);
+        setResult(Activity.RESULT_OK, intent);
     }
 }

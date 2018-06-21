@@ -122,6 +122,10 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
         }
     }
 
+    private float moveX = 0;
+    private float moveY = 0;
+    private static final int MOVE_DES_SUITABLE = 10;
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
@@ -144,6 +148,9 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
                 if (onViewTouthListener != null) {
                     onViewTouthListener.onTouchDown();
                 }
+                moveX = event.getX();
+                moveY = event.getY();
+
                 // 每次down下去重新new一个Path
                 mPath = new Path();
                 mPath.moveTo(descX, descY);
@@ -158,8 +165,10 @@ public class CustomPaintView extends View implements EditFunctionOperationInterf
                     }
                     return false;
                 }
-                if (onViewTouthListener != null) {
-                    onViewTouthListener.onTouchMove();
+                if (Math.abs(event.getX() - moveX) > MOVE_DES_SUITABLE || Math.abs(event.getY() - moveY) > MOVE_DES_SUITABLE) {
+                    if (onViewTouthListener != null) {
+                        onViewTouthListener.onTouchMove();
+                    }
                 }
                 ret = true;
                 // 从x1,y1到x2,y2画一条贝塞尔曲线，更平滑(直接用mPath.lineTo也是可以的)

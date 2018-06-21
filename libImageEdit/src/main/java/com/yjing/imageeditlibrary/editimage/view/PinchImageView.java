@@ -11,6 +11,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
+import com.yjing.imageeditlibrary.editimage.inter.OnViewTouthListener;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -803,6 +805,15 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
         }
     });
 
+    private OnViewTouthListener onViewTouthListener;
+
+    public void setOnViewTouthListener(OnViewTouthListener onViewTouthListener) {
+        this.onViewTouthListener = onViewTouthListener;
+    }
+
+    private float moveX = 0;
+    private float moveY = 0;
+    private static final int MOVE_DES_SUITABLE = 50;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
@@ -814,6 +825,11 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
                 scaleEnd();
             }
             mPinchMode = PINCH_MODE_FREE;
+            if (onViewTouthListener != null) {
+                onViewTouthListener.onTouchUp();
+            }
+            moveX = event.getX();
+            moveY = event.getY();
         } else if (action == MotionEvent.ACTION_POINTER_UP) {
             //多个手指情况下抬起一个手指,此时需要是缩放模式才触发
             if (mPinchMode == PINCH_MODE_SCALE) {
@@ -831,6 +847,9 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
             }
             //第一个点按下，开启滚动模式，记录开始滚动的点
         } else if (action == MotionEvent.ACTION_DOWN) {
+            if (onViewTouthListener != null) {
+                onViewTouthListener.onTouchDown();
+            }
             //在矩阵动画过程中不允许启动滚动模式
             if (!(mScaleAnimator != null && mScaleAnimator.isRunning())) {
                 //停止所有动画
@@ -865,6 +884,11 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
                     mLastMovePoint.set(lineCenter[0], lineCenter[1]);
                     //处理缩放
                     scale(mScaleCenter, mScaleBase, distance, mLastMovePoint);
+                }
+            }
+            if (Math.abs(event.getX() - moveX) > MOVE_DES_SUITABLE || Math.abs(event.getY() - moveY) > MOVE_DES_SUITABLE) {
+                if (onViewTouthListener != null) {
+                    onViewTouthListener.onTouchMove();
                 }
             }
         }

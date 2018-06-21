@@ -247,6 +247,11 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
         canvas.restore();
     }
 
+    private float moveX = 0;
+    private float moveY = 0;
+    private static final int MOVE_DES_SUITABLE = 10;
+
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
@@ -285,6 +290,8 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
                     if (onViewTouthListener != null) {
                         onViewTouthListener.onTouchDown();
                     }
+                    moveX = event.getX();
+                    moveY = event.getY();
                     isShowHelpBox = true;
                     mCurrentMode = MOVE_MODE;
                     last_x = x;
@@ -304,8 +311,10 @@ public class TextStickerView extends View implements EditFunctionOperationInterf
             case MotionEvent.ACTION_MOVE:
                 ret = true;
                 if (mCurrentMode == MOVE_MODE) {// 移动贴图
-                    if (onViewTouthListener != null) {
-                        onViewTouthListener.onTouchMove();
+                    if (Math.abs(event.getX() - moveX) > MOVE_DES_SUITABLE || Math.abs(event.getY() - moveY) > MOVE_DES_SUITABLE) {
+                        if (onViewTouthListener != null) {
+                            onViewTouthListener.onTouchMove();
+                        }
                     }
                     mCurrentMode = MOVE_MODE;
                     float dx = x - last_x;

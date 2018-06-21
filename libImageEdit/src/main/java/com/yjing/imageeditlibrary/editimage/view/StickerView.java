@@ -104,6 +104,10 @@ public class StickerView extends View implements EditFunctionOperationInterface 
         // System.out.println(w + "   " + h + "    " + oldw + "   " + oldh);
     }
 
+    private float moveX = 0;
+    private float moveY = 0;
+    private static final int MOVE_DES_SUITABLE = 10;
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
@@ -151,6 +155,8 @@ public class StickerView extends View implements EditFunctionOperationInterface 
                         if (onViewTouthListener != null) {
                             onViewTouthListener.onTouchDown();
                         }
+                        moveX = event.getX();
+                        moveY = event.getY();
                         // 被选中一张贴图
                         ret = true;
                         if (currentItem != null) {
@@ -180,8 +186,10 @@ public class StickerView extends View implements EditFunctionOperationInterface 
             case MotionEvent.ACTION_MOVE:
                 ret = true;
                 if (currentStatus == STATUS_MOVE) {// 移动贴图
-                    if (onViewTouthListener != null) {
-                        onViewTouthListener.onTouchMove();
+                    if (Math.abs(event.getX() - moveX) > MOVE_DES_SUITABLE || Math.abs(event.getY() - moveY) > MOVE_DES_SUITABLE) {
+                        if (onViewTouthListener != null) {
+                            onViewTouthListener.onTouchMove();
+                        }
                     }
                     float dx = x - oldx;
                     float dy = y - oldy;
