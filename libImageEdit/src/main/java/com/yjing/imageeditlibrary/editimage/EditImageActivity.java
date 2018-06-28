@@ -43,6 +43,7 @@ import com.yjing.imageeditlibrary.editimage.view.mosaic.MosaicView;
 import com.yjing.imageeditlibrary.utils.BitmapUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * 图片编辑 主页面
@@ -53,13 +54,13 @@ public class EditImageActivity extends BaseActivity {
     public static final String FILE_PATH = "file_path";
     public static final String EXTRA_OUTPUT = "extra_output";
     public static final String SAVE_FILE_PATH = "save_file_path";
+    public static final String MENU_ITEM = "menuItem";
+    public static final String TAG_BACKGROUND_COLOR = "backgroundcolor";
+    public static final String TAG_RETURN_IMAGE_TYPE = "returnImageType";
+
 
     public static final String IMAGE_IS_EDIT = "image_is_edit";
 
-    public static final int TYPE_DEFAULT = 0;
-    public static final int TYPE_FORWARD = 1;
-    public static final int TYPE_CLOND = 2;
-    public static final int TYPE_SAVE = 3;
 
     public static final String RESULT_TYPE = "resultType";
     public static final String SHOW_MUNU = "showMenu";
@@ -105,7 +106,10 @@ public class EditImageActivity extends BaseActivity {
     private View loading;
     private int showMenuWindow = 0;
 
-    private int resultType = 0;
+    private String resultType;
+    private ArrayList<String> mMenuItems;
+    private String groundColor;
+    private int resultImageType = 0;   //返回图片的格式 0 png，1 jpg
 
     /**
      * @param context
@@ -151,7 +155,14 @@ public class EditImageActivity extends BaseActivity {
     private void getData() {
         filePath = getIntent().getStringExtra(FILE_PATH);
         saveFilePath = getIntent().getStringExtra(EXTRA_OUTPUT);// 保存图片路径
-        showMenuWindow = getIntent().getIntExtra(SHOW_MUNU, TYPE_DEFAULT);
+        showMenuWindow = getIntent().getIntExtra(SHOW_MUNU, 0);
+        mMenuItems = getIntent().getStringArrayListExtra(MENU_ITEM);
+        if (mMenuItems == null) {
+            mMenuItems = new ArrayList<>();
+        }
+        resultImageType = getIntent().getIntExtra(TAG_RETURN_IMAGE_TYPE,0);
+        groundColor = getIntent().getStringExtra(TAG_BACKGROUND_COLOR);
+
         loadImage(filePath);
     }
 
@@ -182,6 +193,14 @@ public class EditImageActivity extends BaseActivity {
         });
 
         mainImage = (PinchImageView) findViewById(R.id.main_image);
+        if (!TextUtils.isEmpty(groundColor)) {
+            String replaceColor = groundColor.replace("0x", "#");  //将 0x替换成#
+            try {
+                mainImage.setBackgroundColor(Color.parseColor(replaceColor));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         backBtn = findViewById(R.id.back_btn);// 退出按钮
         backBtn.setOnClickListener(new OnClickListener() {
             @Override
@@ -238,14 +257,12 @@ public class EditImageActivity extends BaseActivity {
     }
 
     private void showPopupWindow() {
-        MenuPopupWindowView menuPopupWindow = new MenuPopupWindowView(this);
+        MenuPopupWindowView menuPopupWindow = new MenuPopupWindowView(this,mMenuItems);
         menuPopupWindow.setOnItemClickListener(new MenuPopupWindowView.OnItemClickListener() {
             @Override
-            public void onItemClick(int type) {
-                resultType = type;
-                if (type != TYPE_DEFAULT) {
-                    new SaveBtnClick(true, null).onClick(saveBtn);
-                }
+            public void onItemClick(String str) {
+                resultType = str;
+                new SaveBtnClick(true, null).onClick(saveBtn);
             }
         });
         menuPopupWindow.showAtLocation(titleBar, Gravity.BOTTOM, 0, 0);
@@ -646,7 +663,7 @@ public class EditImageActivity extends BaseActivity {
             if (TextUtils.isEmpty(saveFilePath))
                 return false;
 
-            return BitmapUtils.saveBitmap(params[0], saveFilePath);
+            return BitmapUtils.saveBitmap(params[0], saveFilePath,resultImageType);
         }
 
         @Override

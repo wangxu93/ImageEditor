@@ -62,7 +62,10 @@
 
     <string name="crop_image_activity_no_permissions">Cancelling, required permissions are not granted</string>
 
-    <string name="forward">转发</string>
-    <string name="save_to_cloud">保存到云盘</string>
-    <string name="save_image">保存到相册</string>
+
+
+    <string name="image_edit_forward">转发</string>
+    <string name="image_edit_save_to_cloud">保存到云盘</string>
+    <string name="image_edit_save_image">保存到相册</string>
+    <string name="image_edit_replace_image">替换原图</string>
 </resources>

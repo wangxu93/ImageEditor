@@ -358,7 +358,7 @@ public class PaletteActivity extends BaseActivity implements SeekBar.OnSeekBarCh
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             paint.setColorFilter(mColorFilter);
             canvas.drawBitmap(mBitmap, 0, 0, paint);
-            boolean b = BitmapUtils.saveBitmap(mCopyBitmap, mOutPath);
+            boolean b = BitmapUtils.saveBitmap(mCopyBitmap, mOutPath,0);
             mCopyBitmap.recycle();
             mCopyBitmap = null;
             return b;

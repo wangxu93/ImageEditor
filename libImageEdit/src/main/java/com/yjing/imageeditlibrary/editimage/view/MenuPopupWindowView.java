@@ -5,36 +5,35 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
 import com.yjing.imageeditlibrary.R;
 
-import static com.yjing.imageeditlibrary.editimage.EditImageActivity.TYPE_CLOND;
-import static com.yjing.imageeditlibrary.editimage.EditImageActivity.TYPE_DEFAULT;
-import static com.yjing.imageeditlibrary.editimage.EditImageActivity.TYPE_FORWARD;
-import static com.yjing.imageeditlibrary.editimage.EditImageActivity.TYPE_SAVE;
+import java.util.ArrayList;
 
 public class MenuPopupWindowView extends PopupWindow implements View.OnClickListener {
-    private Button btnSaveToGallery;
-    private Button btnShare;
+
+
     private Button btnCancel;
-    private Button btnSaveCloud;
 
 
-
-    public MenuPopupWindowView(Context context) {
+    public MenuPopupWindowView(Context context, ArrayList<String> strs) {
         super(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         View root = inflater.inflate(R.layout.window_image_menu, null);
-        btnSaveToGallery = view(root, R.id.btnSave);
-        btnShare = view(root, R.id.btnShare);
+        LinearLayout llContaner = root.findViewById(R.id.llContaner);
         btnCancel = view(root, R.id.btnCancel);
-        btnSaveToGallery.setOnClickListener(this);
-        btnShare.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
-        btnSaveCloud = (Button) root.findViewById(R.id.btn_save_cloud);
-        btnSaveCloud.setOnClickListener(this);
+
+        for (String str : strs) {
+            View llBtn = inflater.inflate(R.layout.view_menu_btn, null);
+            Button button = llBtn.findViewById(R.id.button);
+            button.setText(str);
+            button.setOnClickListener(this);
+            llContaner.addView(llBtn);
+        }
 
         setContentView(root);
         setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -47,25 +46,12 @@ public class MenuPopupWindowView extends PopupWindow implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        if (v.equals(btnSaveToGallery)) {
-            if (onItemClickListener != null) {
-                onItemClickListener.onItemClick(TYPE_SAVE);
-            }
+        if (v.equals(btnCancel)) {
             dismiss();
-        } else if (v.equals(btnCancel)) {
-            if (onItemClickListener != null) {
-                onItemClickListener.onItemClick(TYPE_DEFAULT);
-            }
-            dismiss();
-        } else if (v.equals(btnShare)) {
-            if (onItemClickListener != null) {
-                onItemClickListener.onItemClick(TYPE_FORWARD);
-            }
-            dismiss();
-
-        } else if (v.getId() == R.id.btn_save_cloud) {
-            if (onItemClickListener != null) {
-                onItemClickListener.onItemClick(TYPE_CLOND);
+        } else if (v.getId() == R.id.button) {
+            if (onItemClickListener != null && v instanceof Button) {
+                String str = ((Button) v).getText().toString();
+                onItemClickListener.onItemClick(str);
             }
             dismiss();
         }
@@ -85,8 +71,8 @@ public class MenuPopupWindowView extends PopupWindow implements View.OnClickList
         this.onItemClickListener = onItemClickListener;
     }
 
-    public interface OnItemClickListener{
-        void onItemClick(int type);
+    public interface OnItemClickListener {
+        void onItemClick(String str);
     }
 
 }

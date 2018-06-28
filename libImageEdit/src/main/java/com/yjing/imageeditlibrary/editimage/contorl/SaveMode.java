@@ -103,7 +103,7 @@ public class SaveMode {
                 bottomView.setVisibility(View.VISIBLE);
                 fl_edit_bottom_height.setVisibility(View.GONE);
                 aboveView.setVisibility(View.GONE);
-            } else if ( x instanceof StirckerFragment) {
+            } else if (x instanceof StirckerFragment) {
                 fl_edit_bottom_height.setVisibility(View.VISIBLE);
                 aboveView.setVisibility(View.GONE);
                 bottomView.setVisibility(View.GONE);
@@ -152,7 +152,7 @@ public class SaveMode {
         public void setContainerVisiable(Fragment fragment, int visiable) {
             if (fragment instanceof AddTextFragment) {
                 bottomView.setVisibility(visiable);
-            } else if ( fragment instanceof StirckerFragment) {
+            } else if (fragment instanceof StirckerFragment) {
                 fl_edit_bottom_height.setVisibility(visiable);
             } else {
                 aboveView.setVisibility(visiable);

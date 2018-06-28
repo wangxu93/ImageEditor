@@ -416,14 +416,18 @@ public class BitmapUtils {
      *
      * @param bm
      */
-    public static boolean saveBitmap(Bitmap bm, String filePath) {
+    public static boolean saveBitmap(Bitmap bm, String filePath,int requestImageType) {
         File f = new File(filePath);
         if (f.exists()) {
             f.delete();
         }
         try {
             FileOutputStream out = new FileOutputStream(f);
-            bm.compress(Bitmap.CompressFormat.PNG, 100, out);
+            if (requestImageType == 0) {
+                bm.compress(Bitmap.CompressFormat.PNG, 100, out);
+            }else{
+                bm.compress(Bitmap.CompressFormat.JPEG,100,out);
+            }
             out.flush();
             out.close();
             return true;
