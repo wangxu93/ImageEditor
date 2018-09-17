@@ -15,11 +15,11 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "com.android.support:appcompat-v7:${supportLibVer}"
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile "com.android.support:recyclerview-v7:${supportLibVer}"
-    compile "com.android.support:support-v4:${supportLibVer}"
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "com.android.support:appcompat-v7:${supportLibVer}"
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    implementation "com.android.support:recyclerview-v7:${supportLibVer}"
+    implementation "com.android.support:support-v4:${supportLibVer}"
     implementation "com.android.support:exifinterface:$supportLibVer"
 }
 

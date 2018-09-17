@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion compileSdkVer
     buildToolsVersion buildToolsVer
+
     aaptOptions.cruncherEnabled = false
     aaptOptions.useNewCruncher = false
 
@@ -29,13 +30,13 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':libImageEdit')
-    compile 'com.github.bumptech.glide:glide:3.7.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':libImageEdit')
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
     //RxJava的依赖包
-    compile 'io.reactivex.rxjava2:rxjava:2.0.3'
+    implementation 'io.reactivex.rxjava2:rxjava:2.0.3'
 //RxAndroid的依赖包
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 }
 repositories {
     flatDir {
